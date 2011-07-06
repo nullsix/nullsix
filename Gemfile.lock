@@ -102,6 +102,7 @@ PLATFORMS
 
 DEPENDENCIES
   capistrano
+  rack (= 1.2.3)
   rails (= 3.0.1)
   rspec
   rspec-rails

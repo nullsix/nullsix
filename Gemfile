@@ -9,6 +9,8 @@ gem 'rails', '3.0.1'
 
 gem 'capistrano'
 
+gem 'rack', '1.2.3'
+
 group :development do
   gem 'rspec-rails'
 end
