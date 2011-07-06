@@ -1,26 +1,23 @@
 require 'bundler/capistrano'
 
 # Servers
-
 #production
 set :domain, 'kernelriot.com'
 role :app, domain
 role :web, domain
 set :user, 'kernelRiot'
 role :db, domain, :primary => true
-#server domain, :app, :web
+
 
 # Application
 set :application, "nullsix"
 set :deploy_to, "/home/#{user}/#{domain}"
-#set :deploy_to, "/home/#{user}/#{domain}/apps/#{application}"
 
 # Settings
 set :use_sudo, false
-default_run_options[:pty] = true
+#default_run_options[:pty] = true
 set :keep_releases, 2
 #set :chmod755, "app config db lib public vendor script script/* public/disp*"
-#default_environment['GEM_PATH']="/usr/lib/ruby/gems/1.8"
 ssh_options[:keys] = %w(~/.ssh/authorized_keys)
 #ssh_options[:keys] = %w(/etc/ssh/ssh_host_rsa_key)
 
@@ -37,9 +34,6 @@ set :deploy_via, :remote_cache
 #set :scm_verbose, true
 set :git_shallow_clone, 1
 set :git_enable_submodules, 1
-
-
-
 
 #############################################################
 # Post Deploy Hooks
