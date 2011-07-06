@@ -1,18 +1,19 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.1'
+gem 'rails'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-#gem 'sqlite3-ruby', :require => 'sqlite3'
+
 
 gem 'capistrano'
 
-gem 'rack', '1.2.3'
+gem 'rack'
 
 group :development do
   gem 'rspec-rails'
+  gem 'sqlite3-ruby', :require => 'sqlite3'
 end
 
 group :test do
