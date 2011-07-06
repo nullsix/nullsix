@@ -46,9 +46,9 @@ namespace :deploy do
     cleanup #removes the old deploys
   end
 
-  after "configure:link_database_yml", "configure:create_shared_directories"
+  #after "deploy:setup", "configure:create_shared_directories"
   after "deploy:update_code", "configure:link_database_yml"
-  after "deploy:symlink", "bundlr:redeploy_gems"
+  #after "deploy:symlink", "bundlr:redeploy_gems"
 end
 
 #############################################################
