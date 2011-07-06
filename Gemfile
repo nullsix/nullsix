@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails'
+gem 'rails', '3.0.9'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -9,7 +9,7 @@ gem 'rails'
 
 gem 'capistrano'
 
-gem 'rack'
+gem 'rack', '1.2.3'
 
 group :development do
   gem 'rspec-rails'
