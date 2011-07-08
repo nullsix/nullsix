@@ -7,7 +7,7 @@ gem 'rails', '3.0.9'
 
 gem 'capistrano'
 
-gem 'rack', '1.2.1'
+gem 'rack', '1.2.3'
 
 group :development do
   gem 'rspec-rails'
