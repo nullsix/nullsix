@@ -9,10 +9,9 @@ gem 'capistrano'
 
 gem 'rack', '1.2.1'
 
-gem 'sqlite3-ruby', :require => 'sqlite3'
-
 group :development do
   gem 'rspec-rails'
+  gem 'sqlite3-ruby', :require => 'sqlite3'
 end
 
 group :test do

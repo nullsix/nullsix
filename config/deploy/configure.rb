@@ -2,9 +2,10 @@ namespace :configure do
 
   # after deploy, this will link the database.yml
   task :link_database_yml do
-    run <<-CMD
-ln -nfs #{shared_path}/database.yml #{release_path}/config/database.yml
-CMD
+    #puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#{release_path}"
+ #   run <<-CMD
+#ln -nfs #{shared_path}/database.yml #{release_path}/config/database.yml
+#CMD
   end
 
   # this will create shared directories for gems
