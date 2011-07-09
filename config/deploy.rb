@@ -5,13 +5,14 @@ require 'bundler/capistrano'
 set :domain, 'kernelriot.com'
 role :app, domain
 role :web, domain
-set :user, 'kernelRiot'
+set :gituser, 'kernelRiot'
+set :user, 'nsinst'
 role :db, domain, :primary => true
 
 
 # Application
 set :application, "nullsix"
-set :deploy_to, "/home/#{user}/#{domain}"
+set :deploy_to, "/home/#{user}/www/#{domain}"
 
 # Settings
 set :use_sudo, false
@@ -27,7 +28,7 @@ load 'config/deploy/configure'
 # Git
 set :scm, :git
 set :branch, 'master'
-set :repository,  "#{user}@#{domain}:~/repos/#{application}.git"
+set :repository,  "#{gituser}@#{domain}:~/repos/#{application}.git"
 set :deploy_via, :remote_cache
 #set :scm_command, "~/packages/bin/git"
 #set :local_scm_command, "/opt/local/bin/git"

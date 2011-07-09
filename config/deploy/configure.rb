@@ -19,12 +19,12 @@ CMD
 end
 
 namespace :bundlr do
-#  task :redeploy_gems, :roles => :app, :except => {:no_release => true} do
-#    run %{
-#cd #{release_path} &&
-#ln -nfs #{shared_path}/gems/gems #{release_path}/gems/gems &&
-#ln -nfs #{shared_path}/gems/specifications #{release_path}/gems/specifications &&
-#thor merb:gem:redeploy
-#}
-#  end
+  task :redeploy_gems, :roles => :app, :except => {:no_release => true} do
+    run %{
+cd #{release_path} &&
+ln -nfs #{shared_path}/gems/gems #{release_path}/gems/gems &&
+ln -nfs #{shared_path}/gems/specifications #{release_path}/gems/specifications &&
+thor merb:gem:redeploy
+}
+  end
 end
