@@ -28,7 +28,7 @@ load 'config/deploy/configure'
 # Git
 set :scm, :git
 set :branch, 'master'
-set :repository,  "#{user}@#{domain}:~/repos/#{application}.git"
+set :repository,  "#{gituser}@#{domain}:~/repos/#{application}.git"
 set :deploy_via, :remote_cache
 #set :scm_command, "~/packages/bin/git"
 #set :local_scm_command, "/opt/local/bin/git"
