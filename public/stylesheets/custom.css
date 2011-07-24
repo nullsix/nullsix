@@ -1,4 +1,45 @@
-h1.nullsix {
-    color: #3187FF;
+/* Header Styles */
+
+header h1.nullsix {
+
     border-bottom: 3px solid #8FD8FF;
+}
+
+header h1.nullsix a {
+    color: #3187FF;
+    text-decoration: none;
+}
+
+header nav {
+    padding:  0 0.7em;
+    white-space: nowrap;
+}
+
+header nav ul {
+    margin: 0;
+    padding:  0;
+}
+
+header nav ul li {
+    list-style-type: none;
+    display: inline-block;
+    padding:  0.2em 0;
+}
+
+header nav ul li a {
+    padding: 0 5px;
+}
+
+header nav ul li a:visited {
+
+}
+
+header nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Link Nav Styles */
+
+footer ul, aside ul {
+    list-style-type: none;
 }

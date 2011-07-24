@@ -24,49 +24,57 @@
 
 <div class="container">
 
-  <div id="header" class="span-24 last">
-        <h1 class="span-4 nullsix">nullsix</h1>
-  </div>
+  <header class="span-24 last">
+    <h1 class="span-4 nullsix"><%= link_to "nullsix", "http://nullsix.com" %></h1>
+    <nav class="span-4 push-15 last">
+      <ul>
+        <li>
+          <%= link_to "Home", "#" %>
+        </li>
+        <li>
+          <%= link_to "Contact", "#" %>
+        </li>
+        <li>
+          <%= link_to "About", "#" %>
+        </li>
+      </ul>
+    </nav>
 
-  <div id="subheader" class="span-24 last">
-        <h3 class="alt">I need a tagline!</h3>
-  </div>
+    <h3 class="span-24 alt last">And the quest is knowledge.</h3>
+  </header>
 
   <hr />
-
   <%= yield %>
   <hr />
 
-  <div class="span-24 last">
-    <p class="quiet">Copyright &copy; 2011 nullsix</p>
-  </div>
+  <footer class="span-24">
+    <p class="span-24 quiet last">Copyright &copy; 2011 nullsix</p>
 
-  <div id="footer" class="span-24">
     <div class="span-8">
       <h5 class="bottom">Sites</h5>
       <ul class="box">
-        <li><a href="#">nullsix</a></li>
-        <li><a href="#">Thoughts of an Eaten Sun</a></li>
-        <li><a href="#">Tinder</a></li>
+        <li><%= link_to "nullsix", "#" %></li>
+        <li><%= link_to "Thoughts of an Eaten Sun", "#" %></li>
+        <li><%= link_to "Tinder", "#" %></li>
       </ul>
     </div>
 
     <div class="span-8">
       <h5 class="bottom">Company</h5>
       <ul class="box">
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact Us</a></li>
+        <li><%= link_to "About", "#" %></li>
+        <li><%= link_to "Contact Us", "#" %></li>
       </ul>
     </div>
 
     <div class="span-8 last">
       <h5 class="bottom">Help</h5>
       <ul class="box">
-        <li><a href="#">Feedback</a></li>
-        <li><a href="#">FAQ</a></li>
+        <li><%= link_to "Feedback", "#" %></li>
+        <li><%= link_to "FAQ", "#" %></li>
       </ul>
     </div>
-  </div>
+  </footer>
 
 </div>
 

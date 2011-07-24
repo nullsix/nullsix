@@ -1,4 +1,4 @@
-<div class="span-16 colborder">
+<section class="span-16 colborder">
   <h3><%= @title %></h3>
   <p>This will show information on the pages the user selects from the list to the left.</p>
 
@@ -17,12 +17,13 @@
   <div class="span-3 success last">
     <p>Success! ^_^</p>
   </div>
-</div>
-<div class="span-7 last">
+</section>
+
+<aside class="span-7 last">
   <h3>Sites</h3>
   <ul>
-    <li><a href="#">nullsix</a></li>
-    <li><a href="#">Thoughts of an Eaten Sun</a></li>
-    <li><a href="#">Tinder</a></li>
+    <li><%= link_to "nullsix", "#" %></li>
+    <li><%= link_to "Thoughts of an Eaten Sun", "#" %></li>
+    <li><%= link_to "Tinder", "#" %></li>
   </ul>
-</div>
+</aside>
