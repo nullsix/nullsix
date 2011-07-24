@@ -2,79 +2,22 @@
 <html>
 <head>
   <title><%= title %></title>
-  <%= stylesheet_link_tag :all %>
   <%= javascript_include_tag :defaults %>
-
-  <!-- Framework CSS -->
-  <%= stylesheet_link_tag 'blueprint/screen', :media => 'screen' %>
-  <%= stylesheet_link_tag 'blueprint/print', :media => 'print' %>
-  <!--[if lt IE 8]><%= stylesheet_link_tag 'blueprint/ie', :media => 'screen' %><![endif]-->
-
-  <!-- Import fancy-type plugin -->
-  <%= stylesheet_link_tag 'blueprint/plugins/fancy-type/screen', :media => 'screen' %>
-
-  <!-- nullsix custom CSS -->
-  <%= stylesheet_link_tag 'custom', :media => 'screen' %>
-
-  <!--[if IE]><%= javascript_include_tag "http://html5shiv.googlecode.com/svn/trunk/html5.js" %><![endif]-->
-
   <%= csrf_meta_tag %>
+  <%= render 'layouts/stylesheets' %>
+
 </head>
 <body>
 
 <div class="container">
 
-  <header class="span-24 last">
-    <h1 class="span-4 nullsix"><%= link_to "nullsix", "http://nullsix.com" %></h1>
-    <nav class="span-4 push-15 last">
-      <ul>
-        <li>
-          <%= link_to "Home", "#" %>
-        </li>
-        <li>
-          <%= link_to "Contact", "#" %>
-        </li>
-        <li>
-          <%= link_to "About", "#" %>
-        </li>
-      </ul>
-    </nav>
-
-    <h3 class="span-24 alt last">And the quest is knowledge.</h3>
-  </header>
+  <%= render 'layouts/header' %>
 
   <hr />
   <%= yield %>
   <hr />
 
-  <footer class="span-24">
-    <p class="span-24 quiet last">Copyright &copy; 2011 nullsix</p>
-
-    <div class="span-8">
-      <h5 class="bottom">Sites</h5>
-      <ul class="box">
-        <li><%= link_to "nullsix", "#" %></li>
-        <li><%= link_to "Thoughts of an Eaten Sun", "#" %></li>
-        <li><%= link_to "Tinder", "#" %></li>
-      </ul>
-    </div>
-
-    <div class="span-8">
-      <h5 class="bottom">Company</h5>
-      <ul class="box">
-        <li><%= link_to "About", "#" %></li>
-        <li><%= link_to "Contact Us", "#" %></li>
-      </ul>
-    </div>
-
-    <div class="span-8 last">
-      <h5 class="bottom">Help</h5>
-      <ul class="box">
-        <li><%= link_to "Feedback", "#" %></li>
-        <li><%= link_to "FAQ", "#" %></li>
-      </ul>
-    </div>
-  </footer>
+  <%= render 'layouts/footer' %>
 
 </div>
 
