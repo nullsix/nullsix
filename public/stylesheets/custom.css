@@ -1,45 +1,76 @@
-/* Header Styles */
+/* Global Styles */
 
-header h1.nullsix {
-
-    border-bottom: 3px solid #8FD8FF;
+body {
+  background-color: #10294d;
+  color: #ffffff;
 }
 
-header h1.nullsix a {
-    color: #3187FF;
-    text-decoration: none;
+/* Header Styles */
+
+header {
+  margin-top:20px;
+  margin-left:20px;
 }
 
 header nav {
-    padding:  0 0.7em;
-    white-space: nowrap;
+  padding-top:200px;
+  width:266px;
+  height:300px;
+  background:url(/images/nullsixlogo.png) no-repeat;
 }
 
 header nav ul {
-    margin: 0;
-    padding:  0;
+  margin-left:0px;
+  width:160px;
+  font-size:225%;
+  list-style-type:none;
+  text-align:right;
 }
 
-header nav ul li {
-    list-style-type: none;
-    display: inline-block;
-    padding:  0.2em 0;
+/* Content Styles */
+
+section {
+  margin-top: 220px;
+  margin-left:20px;
 }
 
-header nav ul li a {
-    padding: 0 5px;
+h1 {
+  color: #ffffff;
+  margin-left:-20px;
 }
 
-header nav ul li a:visited {
-
+.alt {
+  color:#ffffff;
 }
 
-header nav ul li a:hover {
-    text-decoration: underline;
+/* Footer Styles */
+
+footer {
+  margin-top:50px;
+}
+
+footer quote {
+  #color: #45618A;
+  color: #265496;
+  font-size: 125%;
+}
+
+footer quote .bold {
+  #color: #0075FF;
+  #color: #B0F37C;
+  color: #7cb7d5;
+  font-size: 160%;
+}
+
+footer quote .bolder {
+  #color: #8FDC35;
+  #color: #8AF32E;
+  color: #c5eafd;
+  font-size: 200%;
 }
 
 /* Link Nav Styles */
 
-footer ul, aside ul {
+/*footer ul, aside ul {
     list-style-type: none;
-}
+}*/
