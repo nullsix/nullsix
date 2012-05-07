@@ -4,4 +4,4 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-Nullsix::Application.config.secret_token = '9c97c1dae5b599a15a8741219f6775051634c2ecf495492fbe5247110df1039fe327c7603f6db8ab61cec1a8537e343a7a3139b25fd9a3fab331274e3ed53475'
+Nullsix::Application.config.secret_token = 'b3af76b08167572fab6ceb110c3eddd4e731596337cdfe6527384434eb07cfb2c6e6218b294ea42eff07be292fdee128a15ea42b5408ea62b11524da166f7ce3'
