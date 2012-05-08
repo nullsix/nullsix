@@ -7,11 +7,7 @@ body {
 
 /* Header Styles */
 
-header nav {
-  padding-top:300px;
-  width:266px;
-  height:300px;
-  background:url(/images/nullsixlogo.png) no-repeat;
+header {
 }
 
 header nav ul {
@@ -30,32 +26,24 @@ section {
 
 /* Footer Styles */
 
-footer {
-  margin-top:50px;
-}
-
-footer quote {
+section quote {
   #color: #45618A;
   color: #265496;
-  font-size: 125%;
+  font-size: 3em;
+  line-height: 2em;
 }
 
-footer quote .bold {
+section quote .bold {
   #color: #0075FF;
   #color: #B0F37C;
   color: #7cb7d5;
   font-size: 160%;
 }
 
-footer quote .bolder {
+section quote .bolder {
   #color: #8FDC35;
   #color: #8AF32E;
   color: #c5eafd;
-  font-size: 200%;
+  font-size: 300%;
+  vertical-align: text-top;
 }
-
-/* Link Nav Styles */
-
-/*footer ul, aside ul {
-    list-style-type: none;
-}*/
