@@ -4,7 +4,7 @@ require 'bundler/capistrano'
 
 # Servers
 #production
-set :domain, 'inthom.com'
+set :domain, 'nullsix.com'
 role :app, domain
 role :web, domain
 set :gituser, 'git'
@@ -12,7 +12,7 @@ set :user, 'kyle'
 role :db, domain, :primary => true
 
 set :rvm_type, :system
-set :rvm_ruby_string, '1.9.3@inthom-nullsix'
+set :rvm_ruby_string, '1.9.3@nullsix'
 
 # Application
 set :application, "nullsix"
