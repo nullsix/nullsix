@@ -1,6 +1,7 @@
 $:.unshift(File.expand_path('./lib', ENV['rvm_path']))
 require 'rvm/capistrano'
 require 'bundler/capistrano'
+require 'capistrano/ext/mulistage'
 
 # Servers
 #production
@@ -11,6 +12,7 @@ set :gituser, 'git'
 set :user, 'kyle'
 role :db, domain, :primary => true
 
+# RVM use
 set :rvm_type, :system
 set :rvm_ruby_string, '1.9.3@nullsix'
 
@@ -24,8 +26,6 @@ set :use_sudo, false
 #set :keep_releases, 2
 #set :chmod755, "app config db lib public vendor script script/* public/disp*"
 ssh_options[:forward_agent] = true
-#ssh_options[:keys] = %w(~/.ssh/authorized_keys)
-#ssh_options[:keys] = %w(/etc/ssh/ssh_host_rsa_key)
 
 # Includes
 load 'config/deploy/configure'
