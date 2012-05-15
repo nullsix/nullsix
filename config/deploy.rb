@@ -34,7 +34,6 @@ load 'config/deploy/configure'
 
 # Git
 set :scm, :git
-set :branch, 'barebones'
 set :repository,  "#{gituser}@bitbucket.org:kyletolle/#{application}.git"
 #set :deploy_via, :remote_cache
 #set :scm_command, "~/packages/bin/git"
