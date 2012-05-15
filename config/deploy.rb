@@ -1,7 +1,11 @@
 $:.unshift(File.expand_path('./lib', ENV['rvm_path']))
 require 'rvm/capistrano'
 require 'bundler/capistrano'
-require 'capistrano/ext/mulistage'
+
+# Stages
+set :stages, ["staging", "production"]
+set :default_stage, "staging"
+require 'capistrano/ext/multistage'
 
 # Servers
 #production
@@ -14,11 +18,9 @@ role :db, domain, :primary => true
 
 # RVM use
 set :rvm_type, :system
-set :rvm_ruby_string, '1.9.3@nullsix'
 
 # Application
 set :application, "nullsix"
-set :deploy_to, "/srv/www/#{domain}"
 
 # Settings
 set :use_sudo, false
