@@ -10,6 +10,10 @@ body {
 header {
 }
 
+header img {
+  max-width:100%;
+}
+
 header nav ul {
   margin-left:0px;
   width:160px;
@@ -27,23 +31,35 @@ section {
 /* Footer Styles */
 
 section quote {
-  #color: #45618A;
+  color: #45618A;
   color: #265496;
   font-size: 3em;
   line-height: 2em;
 }
 
 section quote .bold {
-  #color: #0075FF;
-  #color: #B0F37C;
+  color: #0075FF;
+  color: #B0F37C;
   color: #7cb7d5;
-  font-size: 160%;
+  font-size: 1.6em;
 }
 
 section quote .bolder {
-  #color: #8FDC35;
-  #color: #8AF32E;
+  color: #8FDC35;
+  color: #8AF32E;
   color: #c5eafd;
-  font-size: 300%;
+  font-size: 3em;
   vertical-align: text-top;
+}
+
+@media all and (min-width: 768px) and (max-width: 979px) {
+  body { font-size: 8px; line-height: 12px; }
+  header img { max-width:100%; }
+  section { margin-top: 140px; }
+}
+
+@media all and (max-width: 767px) {
+  body { font-size: 6px; line-height: 10px; }
+  header img { max-width: 150px; }
+  section { margin-top: 0px; }
 }
