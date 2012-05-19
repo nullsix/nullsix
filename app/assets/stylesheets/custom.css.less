@@ -10,9 +10,6 @@ body {
 header {
 }
 
-header img {
-  max-width:100%;
-}
 
 header nav ul {
   margin-left:0px;
@@ -24,42 +21,66 @@ header nav ul {
 
 /* Content Styles */
 
-section {
-  margin-top: 220px;
-}
 
 /* Footer Styles */
 
 section quote {
   color: #45618A;
   color: #265496;
-  font-size: 3em;
-  line-height: 2em;
 }
 
 section quote .bold {
   color: #0075FF;
   color: #B0F37C;
   color: #7cb7d5;
-  font-size: 1.6em;
 }
 
 section quote .bolder {
   color: #8FDC35;
   color: #8AF32E;
   color: #c5eafd;
-  font-size: 3em;
   vertical-align: text-top;
 }
 
-@media all and (min-width: 768px) and (max-width: 979px) {
-  body { font-size: 8px; line-height: 12px; }
-  header img { max-width:100%; }
-  section { margin-top: 140px; }
+section quote .bold { font-size: 1.6em; }
+section quote .bolder { font-size: 3em; }
+
+// Large desktop
+@media (min-width: 1200px) {
+  header img { width: 100%; }
+  section { margin-top: 220px; }
+  section quote { font-size: 3.4em; line-height: 2.5em; }
+  section quote .bold { font-size: 1.6em; }
+  section quote .bolder { font-size: 3em; }
 }
 
-@media all and (max-width: 767px) {
-  body { font-size: 6px; line-height: 10px; }
-  header img { max-width: 150px; }
+// Normal desktop
+@media (min-width: 980px) and (max-width: 1199px) {
+  header img { width:100%; }
+  section { margin-top: 220px; }
+  section quote { font-size: 2.8em; line-height: 2em; }
+}
+
+// Portrait tablet to landscape and desktop
+@media (min-width: 768px) and (max-width: 979px) {
+  body { font-size: 8px; line-height: 12px; }
+  header img { max-width:100%; }
+  section { margin-top: 90px; }
+  section quote { font-size: 3.3em; line-height: 2em }
+}
+
+// Landscape phone to portrait tablet
+@media (max-width: 767px) {
+  body { font-size: 8px; line-height: 12px; }
+  header img { max-width: 30%; }
   section { margin-top: 0px; }
+  section quote { font-size: 2.9em; line-height: 2em }
+}
+  
+// Landscape phones and down
+@media (max-width: 480px) {
+  body { font-size: 13px; line-height: 16px; }
+  header img { min-width:20%; max-width: 30%; }
+  section { margin-top: 0px; }
+  section quote { font-size: 1em; line-height: 2em }
 }
