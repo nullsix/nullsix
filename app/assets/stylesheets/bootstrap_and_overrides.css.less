@@ -37,13 +37,19 @@
 @brightGreen: #8af32e;
 @brightBlue: #0075FF;
 @lightGreen: #B0F37C;
+@lightPink: #ff3f9e;
+@pink: #fe2791;
+@brightPink: #ff007e;
 
-body { padding-top: 60px; }
-
+// Default color overrides
 @bodyBackground: @darkBlue;
-@textColor: @white;
+@textColor: @purpleBlue;
 @linkColor: @logoGreen;
 
+/* Don't want the page to collapse more than this width */
+.row {
+  min-width:310px;
+}
 
 section {
   quote {
@@ -66,13 +72,19 @@ section {
   }
 }
 
-.row {
-  min-width:310px;
+footer {
+  margin-top:60px;
+  text-align:center;
 }
 
 // Large desktop
 @media (min-width: 1200px) {
+  body {
+    margin-top:60px;
+  }
+
   header img { width: 100%; }
+
   section {
     margin-top: 220px;
 
@@ -85,7 +97,12 @@ section {
 
 // Normal desktop
 @media (min-width: 980px) and (max-width: 1199px) {
+  body {
+    margin-top:60px;
+  }
+  
   header img { width:100%; }
+
   section {
     margin-top: 180px;
 
@@ -105,6 +122,7 @@ section {
       max-width:100%;
     }
   }
+
   section {
     margin-top: 150px;
 
@@ -125,6 +143,7 @@ section {
       max-width: 30%;
     }
   }
+
   section {
     margin-top: 0px;
 
@@ -137,5 +156,8 @@ section {
   
 // Landscape phones and down
 @media (max-width: 480px) {
-  section quote { font-size: 2.0em; line-height: 2.0em }
+  section quote {
+    font-size: 2.0em;
+    line-height: 2.0em;
+  }
 }
