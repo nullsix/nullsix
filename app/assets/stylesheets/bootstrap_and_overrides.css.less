@@ -1,5 +1,4 @@
 @import "twitter/bootstrap/bootstrap";
-body { padding-top: 60px; }
 
 @import "twitter/bootstrap/responsive";
 
@@ -27,50 +26,40 @@ body { padding-top: 60px; }
 //
 // Example:
 // @linkColor: #ff0000;
+@darkBlue: #10294d;
+@logoGreen: #8af32e;
 
+@purpleBlue: #265496;
+@lightBlue: #7cb7d5;
+@offWhite: #c5eafd;
 
-/* Global Styles */
+// Test colors
+@brightGreen: #8af32e;
+@brightBlue: #0075FF;
+@lightGreen: #B0F37C;
 
-body {
-  background-color: #10294d;
-  color: #ffffff;
-}
+body { padding-top: 60px; }
 
-/* Header Styles */
+@bodyBackground: @darkBlue;
+@textColor: @white;
+@linkColor: @logoGreen;
 
-header {
-}
-
-
-header nav ul {
-  margin-left:0px;
-  width:160px;
-  font-size:225%;
-  list-style-type:none;
-  text-align:right;
-}
-
-/* Content Styles */
-
-
-/* Footer Styles */
 
 section {
   quote {
-    //color: #45618A;
-    color: #265496;
+    @quoteColor: @purpleBlue;
+    @quoteBoldColor: @lightBlue;
+    @quoteBolderColor: @offWhite;
+
+    color: @purpleBlue;
 
     .bold {
-      //color: #0075FF;
-      //color: #B0F37C;
-      color: #7cb7d5;
+      color: @quoteBoldColor;
       font-size: 1.6em;
     }
 
     .bolder {
-      //color: #8FDC35;
-      //color: #8AF32E;
-      color: #c5eafd;
+      color: @quoteBolderColor;
       vertical-align: text-top;
       font-size: 3em;
     }
@@ -84,31 +73,66 @@ section {
 // Large desktop
 @media (min-width: 1200px) {
   header img { width: 100%; }
-  section { margin-top: 220px; }
-  section quote { font-size: 3.4em; line-height: 2em; }
+  section {
+    margin-top: 220px;
+
+    quote {
+      font-size: 3.4em;
+      line-height: 2em;
+    }
+  }
 }
 
 // Normal desktop
 @media (min-width: 980px) and (max-width: 1199px) {
   header img { width:100%; }
-  section { margin-top: 180px; }
-  section quote { font-size: 2.8em; line-height: 2em; }
+  section {
+    margin-top: 180px;
+
+    quote {
+      font-size: 2.8em;
+      line-height: 2em;
+    }
+  }
 }
 
 // Portrait tablet to landscape and desktop
 @media (min-width: 768px) and (max-width: 979px) {
-  header { margin-top: 20px; }
-  header img { max-width:100%; }
-  section { margin-top: 150px; }
-  section quote { font-size: 2.13em; line-height: 2.0em }
+  header {
+    margin-top: 20px;
+
+    img {
+      max-width:100%;
+    }
+  }
+  section {
+    margin-top: 150px;
+
+    quote {
+      font-size: 2.13em;
+      line-height: 2.0em;
+    }
+  }
 }
 
 // Landscape phone to portrait tablet
 @media (max-width: 767px) {
-  header { margin-top: 20px; }
-  header img { min-width:20%; max-width: 30%; }
-  section { margin-top: 0px; }
-  section quote { font-size: 2.9em; line-height: 1.8em }
+  header {
+    margin-top: 20px;
+
+    img {
+      min-width:20%;
+      max-width: 30%;
+    }
+  }
+  section {
+    margin-top: 0px;
+
+    quote {
+      font-size: 2.9em;
+      line-height: 1.8em;
+    }
+  }
 }
   
 // Landscape phones and down
