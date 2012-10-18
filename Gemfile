@@ -11,7 +11,6 @@ gem 'pg'
 gem 'foreman', "~> 0.60.2"
 
 gem 'rack', '1.4.0'
-gem 'sqlite3'
 gem 'jquery-rails'
 
 # Gems used only for assets and not required
