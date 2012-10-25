@@ -1,0 +1,142 @@
+$darkBlue: #10294d;
+$logoGreen: #8af32e;
+
+$purpleBlue: #265496;
+$lightBlue: #7cb7d5;
+$offWhite: #c5eafd;
+
+// Test colors
+$brightGreen: #8af32e;
+$brightBlue: #0075FF;
+$lightGreen: #B0F37C;
+$lightPink: #ff3f9e;
+$pink: #fe2791;
+$brightPink: #ff007e;
+
+// Default color overrides
+$bodyBackground: $darkBlue;
+$textColor: $purpleBlue;
+$linkColor: $logoGreen;
+
+@import "bootstrap";
+@import "bootstrap-responsive";
+
+/* Don't want the page to collapse more than this width */
+.row {
+  min-width:310px;
+}
+
+section {
+  quote {
+    $quoteColor: $purpleBlue;
+    $quoteBoldColor: $lightBlue;
+    $quoteBolderColor: $offWhite;
+
+    color: $purpleBlue;
+
+    .bold {
+      color: $quoteBoldColor;
+      font-size: 1.6em;
+    }
+
+    .bolder {
+      color: $quoteBolderColor;
+      vertical-align: text-top;
+      font-size: 3em;
+    }
+  }
+}
+
+#home {
+  text-align:center;
+}
+
+footer {
+  margin-top:60px;
+  text-align:center;
+}
+
+// Large desktop
+@media (min-width: 1200px) {
+  body {
+    margin-top:60px;
+  }
+
+  header img { width: 100%; }
+
+  section {
+    margin-top: 220px;
+
+    quote {
+      font-size: 3.1em;
+      line-height: 2em;
+    }
+  }
+}
+
+// Normal desktop
+@media (min-width: 980px) and (max-width: 1199px) {
+  body {
+    margin-top:60px;
+  }
+  
+  header img { width:100%; }
+
+  section {
+    margin-top: 180px;
+
+    quote {
+      font-size: 2.5em;
+      line-height: 2em;
+    }
+  }
+}
+
+// Portrait tablet to landscape and desktop
+@media (min-width: 768px) and (max-width: 979px) {
+  header {
+    margin-top: 20px;
+
+    img {
+      max-width:100%;
+    }
+  }
+
+  section {
+    margin-top: 150px;
+
+    quote {
+      font-size: 1.9em;
+      line-height: 2.0em;
+    }
+  }
+}
+
+// Landscape phone to portrait tablet
+@media (max-width: 767px) {
+  header {
+    margin-top: 20px;
+
+    img {
+      min-width:20%;
+      max-width: 30%;
+    }
+  }
+
+  section {
+    margin-top: 0px;
+
+    quote {
+      font-size: 2.8em;
+      line-height: 1.8em;
+    }
+  }
+}
+  
+// Landscape phones and down
+@media (max-width: 480px) {
+  section quote {
+    font-size: 2.0em;
+    line-height: 2.0em;
+  }
+}

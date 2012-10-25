@@ -20,7 +20,7 @@ group :assets do
   gem 'coffee-rails', "~> 3.2.2"
   gem 'uglifier', '>= 1.3.0'
   gem 'therubyracer'
-  gem 'twitter-bootstrap-rails'
+  gem 'bootstrap-sass', '~> 2.1.0.1'
 end
 
 group :development do
