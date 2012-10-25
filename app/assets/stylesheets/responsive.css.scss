@@ -1,21 +1,13 @@
+$white: #ffffff;
+$brightPink: #FF4598;
+$brightBlue: #3B93FF;
+
 $darkBlue: #10294d;
 $logoGreen: #8af32e;
 
-$purpleBlue: #265496;
-$lightBlue: #7cb7d5;
-$offWhite: #c5eafd;
-
-// Test colors
-$brightGreen: #8af32e;
-$brightBlue: #0075FF;
-$lightGreen: #B0F37C;
-$lightPink: #ff3f9e;
-$pink: #fe2791;
-$brightPink: #ff007e;
-
 // Default color overrides
 $bodyBackground: $darkBlue;
-$textColor: $purpleBlue;
+$textColor: $white;
 $linkColor: $logoGreen;
 
 @import "bootstrap";
@@ -28,11 +20,11 @@ $linkColor: $logoGreen;
 
 section {
   quote {
-    $quoteColor: $purpleBlue;
-    $quoteBoldColor: $lightBlue;
-    $quoteBolderColor: $offWhite;
+    $quoteColor: $white;
+    $quoteBoldColor: $brightPink;
+    $quoteBolderColor: $brightBlue;
 
-    color: $purpleBlue;
+    color: $white;
 
     .bold {
       color: $quoteBoldColor;
@@ -48,18 +40,18 @@ section {
 }
 
 #home {
-  text-align:center;
+  text-align: center;
 }
 
 footer {
-  margin-top:60px;
-  text-align:center;
+  margin-top: 60px;
+  text-align: center;
 }
 
 // Large desktop
 @media (min-width: 1200px) {
   body {
-    margin-top:60px;
+    margin-top: 60px;
   }
 
   header img { width: 100%; }
@@ -77,10 +69,10 @@ footer {
 // Normal desktop
 @media (min-width: 980px) and (max-width: 1199px) {
   body {
-    margin-top:60px;
+    margin-top: 60px;
   }
   
-  header img { width:100%; }
+  header img { width: 100%; }
 
   section {
     margin-top: 180px;
@@ -98,7 +90,7 @@ footer {
     margin-top: 20px;
 
     img {
-      max-width:100%;
+      max-width: 100%;
     }
   }
 
@@ -118,7 +110,7 @@ footer {
     margin-top: 20px;
 
     img {
-      min-width:20%;
+      min-width: 20%;
       max-width: 30%;
     }
   }
