@@ -12,15 +12,8 @@
   <div class="row">
     <%= render 'layouts/header' %>
 
-    <div class="span9">
-      <section>
-        <quote>
-          It's just <%= link_to "me", "http://twitter.com/kyletolle" %>,<br class="visible-phone" /> trying to <span class="bold">improve</span><br class="visible-phone" /> the world <br class="hidden-phone" />with <br class="visible-phone" /><span class="bolder">software!</span>
-        </quote>
-      </section>
-    </div>
-  </div>
-  <% yield %>
+    <%= yield %>
+
   <%= render 'layouts/footer' %>
 </div>
 
