@@ -18,27 +18,162 @@ $linkColor: $logoGreen;
   min-width:310px;
 }
 
+header {
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  img {
+    max-width: 90%;
+    text-align: center;
+  }
+
+  h1 {
+    color: $logoGreen;
+    font-family: 'Average Sans', sans-serif;
+  }
+}
+
 footer {
   margin-top: 60px;
   text-align: center;
 }
 
+.definitions {
+  div p {
+    margin-left: 20px;
+  }
+
+  .pink-head {
+    h2 {
+      color: $brightPink;
+      border-bottom: 5px solid lighten($brightPink, 10%);
+    }
+  }
+
+  .blue-head {
+    h2 {
+      color: $brightBlue;
+      border-bottom: 5px solid lighten($brightBlue, 10%);
+    }
+  }
+
+  .green-head {
+    h2 {
+      color: $logoGreen;
+      border-bottom: 5px solid lighten($logoGreen, 10%);
+    }
+  }
+}
+
 // Large desktop
 @media (min-width: 1200px) {
+  header {
+    #company-name {
+      margin-top: 30px;
+    }
+    
+    h1 {
+      font-size: 5em;
+    }
+  }
+
+  #knowledge h1 {
+    font-size: 5em;
+  }
+
+  /* Knowledge and the first definition after knowledge */
+  #knowledge, #knowledge + .definitions {
+    padding-bottom: 50px;
+  }
 }
 
 // Normal desktop
 @media (min-width: 980px) and (max-width: 1199px) {
+  header {
+    #company-name {
+      margin-top: 25px;
+    }
+    
+    h1 {
+      font-size: 4em;
+    }
+  }
+
+  #knowledge h1 {
+    font-size: 4em;
+  }
+
+  /* Knowledge and the first definition after knowledge */
+  #knowledge, #knowledge + .definitions {
+    padding-bottom: 40px;
+  }
 }
 
 // Portrait tablet to landscape and desktop
 @media (min-width: 768px) and (max-width: 979px) {
+  header {
+    #company-name {
+      margin-top: 10px;
+    }
+    
+    h1 {
+      font-size: 3em;
+    }
+  }
+
+  #knowledge h1 {
+    font-size: 3em;
+  }
+
+  /* Knowledge and the first definition after knowledge */
+  #knowledge, #knowledge + .definitions {
+    padding-bottom: 30px;
+  }
 }
 
 // Landscape phone to portrait tablet
 @media (max-width: 767px) {
+  header {
+    img {
+      max-width: 10%;
+    }
+  }
+
+  #knowledge h1 {
+    font-size: 3em;
+  }
+
+  /* First definition after knowledge */
+  #knowledge + .definitions {
+    padding-bottom: 30px;
+  }
+
+  h2 {
+    font-size: 2em;
+  }
+
+  .span3 h2 {
+    max-width: 150px;
+  }
 }
   
 // Landscape phones and down
 @media (max-width: 480px) {
+  header {
+    img {
+      max-width: 10%;
+    }
+  }
+
+  #knowledge h1 {
+    font-size: 3em;
+  }
+
+  #knowledge h1 {
+    font-size: 2em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
 }
