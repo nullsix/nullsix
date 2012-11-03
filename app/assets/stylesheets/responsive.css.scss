@@ -13,6 +13,8 @@ $linkColor: $logoGreen;
 @import "bootstrap";
 @import "bootstrap-responsive";
 
+.logo-color { color: $logoGreen; }
+
 /* Don't want the page to collapse more than this width */
 .row {
   min-width:310px;
@@ -27,7 +29,7 @@ header {
   }
 
   h1 {
-    color: $logoGreen;
+    @extend .logo-color;
     font-family: 'Average Sans', sans-serif;
   }
 }
@@ -37,9 +39,7 @@ footer {
   text-align: center;
 }
 
-.project p {
-  margin-left: 20px;
-}
+.project p { margin-left: 20px; }
 
   .pink-head h2 {
     color: $brightPink;
@@ -57,9 +57,7 @@ footer {
   }
 
 .definitions {
-  div p {
-    margin-left: 20px;
-  }
+  div p { margin-left: 20px; }
 }
 
 .section { margin-bottom: 70px; }
@@ -68,6 +66,8 @@ footer {
 // Large desktop
 //
 @media (min-width: 1200px) {
+  p { font-size: 1.2em; }
+
   header #company-name { margin-top: 30px; }
 
   h1 { font-size: 5em; }
@@ -83,8 +83,6 @@ footer {
     padding-bottom: 30px;
   }
 
-  .definitions p { font-size: 1.2em; }
-
   .section { margin-bottom: 60px; }
 }
 
@@ -92,6 +90,8 @@ footer {
 // Normal desktop
 //
 @media (min-width: 980px) and (max-width: 1199px) {
+  p { font-size: 1.2em; }
+
   header #company-name { margin-top: 25px; }
 
   h1 { font-size: 4em; }
@@ -107,8 +107,6 @@ footer {
     padding-bottom: 30px;
   }
 
-  .definitions p { font-size: 1.2em; }
-
   .section { margin-bottom: 50px; }
 }
 
@@ -116,6 +114,8 @@ footer {
 // Portrait tablet to landscape and desktop
 //
 @media (min-width: 768px) and (max-width: 979px) {
+  p { font-size: 1em; }
+
   header #company-name { margin-top: 10px; }
 
   h1 { font-size: 3em; }
@@ -130,8 +130,6 @@ footer {
   #knowledge + .definitions {
     padding-bottom: 30px;
   }
-
-  .definitions p { font-size: 1em; }
 
   .section { margin-bottom: 40px; }
 }
