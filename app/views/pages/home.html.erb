@@ -1,43 +1,66 @@
-<div class="row" id="who-am-i">
+<div class="section">
+  <div class="row" id="who-am-i">
+    <div class="span12 pagination-centered">
+      <h1>Who am I?</h1>
+      <p>I am <%= link_to "Kyle Tolle", "http://twitter.com/kyletolle" %>, a software developer trying to improve the world with software.</p>
+      <p>My projects include services to better communication and collaboration. This is just the beginning.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row" id="knowledge">
+    <div class="span12 pagination-centered">
+        <h1>Knowledge is...</h1>
+    </div>
+  </div>
+
+  <div class="row definitions">
+    <div class="span3 pink-head">
+      <h2>abstract</h2>
+      <p>It is not tied to any particular system, media, format or company.<p>
+    </div>
+    <div class="span3 offset1 blue-head">
+      <h2>evolving</h2>
+      <p>It grows and changes when working with others.</p>
+    </div>
+    <div class="span3 offset1 green-head">
+      <h2>shared</h2>
+      <p>No knowledge belongs to exactly one person. It is by default collaborative and serves everyone</p>
+    </div>
+  </div>
+
+  <div class="row definitions">
+    <div class="span3 green-head">
+      <h2>alpha</h2>
+      <p>You only know how to do something properly after you've done it.<p>
+    </div>
+    <div class="span3 offset1 pink-head">
+      <h2>effort</h2>
+      <p>It takes energy, but it is well spent. It is not work.</p>
+    </div>
+    <div class="span3 offset1 blue-head">
+      <h2>meta</h2>
+      <p>There is always knowledge about the knowledge itself.</p>
+    </div>
+  </div>
+</div>
+
+<div class="row" id="projects">
   <div class="span12 pagination-centered">
-    <h1>Who am I?</h1>
-    <p>I am <%= link_to "Kyle Tolle", "http://twitter.com/kyletolle" %>, a software developer trying to improve the world with software.</p>
-    <p>My projects include services to better communication and collaboration. This is just the beginning.</p>
+    <h1>Projects</h1>
   </div>
-</div>
 
-<div class="row" id="knowledge">
-  <div class="span12 pagination-centered">
-      <h1>Knowledge is...</h1>
+  <div class="span6 project blue-head">
+    <h2>nullsix</h2>
+    <p><strong>Tag:</strong> It's just me, trying to improve the world with software.</p>
+    <p><strong>About:</strong> The main nullsix website.</p>
+    <p><strong>Github:</strong> <%= link = "http://github.com/nullsix/nullsix"; link_to link, link %></p>
   </div>
-</div>
-
-<div class="row definitions">
-  <div class="span3 pink-head">
-    <h2>abstract</h2>
-    <p>It is not tied to any particular system, media, format or company.<p>
-  </div>
-  <div class="span3 offset1 blue-head">
-    <h2>evolving</h2>
-    <p>It grows and changes when working with others.</p>
-  </div>
-  <div class="span3 offset1 green-head">
-    <h2>shared</h2>
-    <p>No knowledge belongs to exactly one person. It is by default collaborative and serves everyone</p>
-  </div>
-</div>
-
-<div class="row definitions">
-  <div class="span3 green-head">
-    <h2>alpha</h2>
-    <p>You only know how to do something properly after you've done it.<p>
-  </div>
-  <div class="span3 offset1 pink-head">
-    <h2>effort</h2>
-    <p>It takes energy, but it is well spent. It is not work.</p>
-  </div>
-  <div class="span3 offset1 blue-head">
-    <h2>meta</h2>
-    <p>There is always knowledge about the knowledge itself.</p>
+  <div class="span6 project green-head">
+    <h2>tinder</h2>
+    <p><strong>Tag:</strong> Ignite creation.</p>
+    <p><strong>About:</strong> Currently vaporware! Share written pieces and get feedback from others.</p>
+    <p><strong>Github:</strong> <%= link = "http://github.com/nullsix/tinder"; link_to link, link %></p>
   </div>
 </div>

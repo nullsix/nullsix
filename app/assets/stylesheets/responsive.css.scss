@@ -37,10 +37,9 @@ footer {
   text-align: center;
 }
 
-.definitions {
-  div p {
-    margin-left: 20px;
-  }
+.project p {
+  margin-left: 20px;
+}
 
   .pink-head h2 {
     color: $brightPink;
@@ -56,7 +55,14 @@ footer {
     color: $logoGreen;
     border-bottom: 5px solid lighten($logoGreen, 10%);
   }
+
+.definitions {
+  div p {
+    margin-left: 20px;
+  }
 }
+
+.section { margin-bottom: 70px; }
 
 //
 // Large desktop
@@ -68,16 +74,18 @@ footer {
 
   #who-am-i p { font-size: 1.5em; }
 
-  #knowledge, #who-am-i {
+  #knowledge, #who-am-i, #projects {
     h1 { line-height: 70px; }
   }
 
   /* Knowledge and the first definition after knowledge */
-  #knowledge + .definitions, #who-am-i {
+  #knowledge + .definitions {
     padding-bottom: 30px;
   }
 
   .definitions p { font-size: 1.2em; }
+
+  .section { margin-bottom: 60px; }
 }
 
 //
@@ -90,16 +98,18 @@ footer {
 
   #who-am-i p { font-size: 1.5em; }
 
-  #knowledge, #who-am-i {
+  #knowledge, #who-am-i, #projects {
     h1 { line-height: 50px; }
   }
 
   /* Knowledge and the first definition after knowledge */
-  #knowledge + .definitions, #who-am-i {
+  #knowledge + .definitions {
     padding-bottom: 30px;
   }
 
   .definitions p { font-size: 1.2em; }
+
+  .section { margin-bottom: 50px; }
 }
 
 //
@@ -112,16 +122,18 @@ footer {
   
   #who-am-i p { font-size: 1.2em; }
 
-  #knowledge, #who-am-i {
+  #knowledge, #who-am-i, #projects {
     h1 { line-height: 35px; }
   }
 
   /* Knowledge and the first definition after knowledge */
-  #knowledge + .definitions, #who-am-i {
+  #knowledge + .definitions {
     padding-bottom: 30px;
   }
 
   .definitions p { font-size: 1em; }
+
+  .section { margin-bottom: 40px; }
 }
 
 //
@@ -134,13 +146,15 @@ footer {
   h2 { font-size: 2em; }
 
   /* First definition after knowledge */
-  #knowledge + .definitions, #who-am-i {
+  #knowledge + .definitions {
     padding-bottom: 30px;
   }
 
   .span3 h2 {
     max-width: 150px;
   }
+
+  .section { margin-bottom: 30px; }
 }
   
 //
@@ -151,4 +165,6 @@ footer {
 
   h1 { font-size: 2.5em; }
   h2 { font-size: 2em; }
+
+  .section { margin-bottom: 20px; }
 }
