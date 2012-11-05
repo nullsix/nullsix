@@ -1,10 +1,8 @@
 <header>
   <div class="row">
-    <div class="span1">
-      <%= link_to image_tag("/images/nullsix-logo.png"), "http://nullsix.com" %>
-    </div>
-    <div class="span11 hidden-phone" id="company-name">
-      <h1>nullsix</h1>
+    <div class="span12">
+      <%= link_to image_tag("/images/nullsix-logo.png"), "http://nullsix.com", class: "pull-left" %>
+      <h1><%= link_to "nullsix", "http://nullsix.com" %></h1>
     </div>
   </div>
 </header>

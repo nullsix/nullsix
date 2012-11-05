@@ -15,7 +15,7 @@ $linkColor: $logoGreen;
 
 .logo-color { color: $logoGreen; }
 
-/* Don't want the page to collapse more than this width */
+/* Don't want the page to collapse more than this width. */
 .row {
   min-width:310px;
 }
@@ -23,14 +23,14 @@ $linkColor: $logoGreen;
 header {
   margin-top: 10px;
 
-  img {
-    max-width: 90%;
-    text-align: center;
-  }
-
   h1 {
-    @extend .logo-color;
     font-family: 'Average Sans', sans-serif;
+    /* nullsix link should always have same style. */
+    a, a:hover, a:visited, a:active {
+      @extend .logo-color;
+      text-decoration: none;
+      color: $logoGreen;
+    }
   }
 }
 
@@ -68,9 +68,16 @@ footer {
 @media (min-width: 1200px) {
   p { font-size: 1.2em; }
 
-  header #company-name { margin-top: 30px; }
-
   h1 { font-size: 5em; }
+
+  header {
+    img {
+      width: 65px;
+      margin-right: 35px;
+    }
+
+    h1 { margin-top: 40px; }
+  }
 
   #who-am-i p { font-size: 1.5em; }
 
@@ -78,9 +85,9 @@ footer {
     h1 { line-height: 70px; }
   }
 
-  /* Knowledge and the first definition after knowledge */
+  /* First definition after knowledge. */
   #knowledge + .definitions {
-    padding-bottom: 30px;
+    margin-bottom: 30px;
   }
 
   .section { margin-bottom: 60px; }
@@ -92,9 +99,16 @@ footer {
 @media (min-width: 980px) and (max-width: 1199px) {
   p { font-size: 1.2em; }
 
-  header #company-name { margin-top: 25px; }
-
   h1 { font-size: 4em; }
+
+  header {
+    img {
+      width: 55px;
+      margin-right: 25px;
+    }
+
+    h1 { margin-top: 30px; }
+  }
 
   #who-am-i p { font-size: 1.5em; }
 
@@ -102,9 +116,9 @@ footer {
     h1 { line-height: 50px; }
   }
 
-  /* Knowledge and the first definition after knowledge */
+  /* First definition after knowledge. */
   #knowledge + .definitions {
-    padding-bottom: 30px;
+    margin-bottom: 30px;
   }
 
   .section { margin-bottom: 50px; }
@@ -116,19 +130,26 @@ footer {
 @media (min-width: 768px) and (max-width: 979px) {
   p { font-size: 1em; }
 
-  header #company-name { margin-top: 10px; }
-
   h1 { font-size: 3em; }
-  
+
+  header {
+    img {
+      width: 40px;
+      margin-right: 20px;
+    }
+
+    h1 { margin-top: 17px; }
+  }
+
   #who-am-i p { font-size: 1.2em; }
 
   #knowledge, #who-am-i, #projects {
     h1 { line-height: 35px; }
   }
 
-  /* Knowledge and the first definition after knowledge */
+  /* First definition after knowledge. */
   #knowledge + .definitions {
-    padding-bottom: 30px;
+    margin-bottom: 30px;
   }
 
   .section { margin-bottom: 40px; }
@@ -138,14 +159,25 @@ footer {
 // Landscape phone to portrait tablet
 //
 @media (max-width: 767px) {
-  header img { max-width: 10%; }
-
   h1 { font-size: 3em; }
   h2 { font-size: 2em; }
 
-  /* First definition after knowledge */
+  header {
+    img {
+      width: 40px;
+      margin-right: 20px;
+    }
+
+    h1 {
+      /* For some reason, we have to use padding here instead of margin or else the image moves down by the size of the margin. */
+      margin: 0px;
+      padding: 17px 0px 10px 0px;
+    }
+  }
+
+  /* First definition after knowledge. */
   #knowledge + .definitions {
-    padding-bottom: 30px;
+    margin-bottom: 30px;
   }
 
   .span3 h2 {
@@ -159,10 +191,21 @@ footer {
 // Landscape phones and down
 //
 @media (max-width: 480px) {
-  header img { max-width: 10%; }
-
   h1 { font-size: 2.5em; }
   h2 { font-size: 2em; }
+
+  header {
+    img {
+      width: 40px;
+      margin-right: 20px;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin: 0px;
+      padding: 17px 0px 10px 0px;
+    }
+  }
 
   .section { margin-bottom: 20px; }
 }
