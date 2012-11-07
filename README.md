@@ -1,8 +1,10 @@
-***nullsix
+nullsix
+===
 
 This is the web application that represents the main nullsix website.
 
-***Getting Started
+Getting Started
+---
 
 This is a standard Rails application, so it will be easy to get started!
 
