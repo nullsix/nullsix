@@ -6,12 +6,12 @@ $darkBlue: #10294d;
 $logoGreen: #8af32e;
 
 // Default color overrides
-$bodyBackground: $darkBlue;
-$textColor: $white;
-$linkColor: $logoGreen;
+$body-bg: $darkBlue;
+$text-color: $white;
+$link-color: $logoGreen;
 
+@import "bootstrap-sprockets";
 @import "bootstrap";
-@import "bootstrap-responsive";
 
 .logo-color { color: $logoGreen; }
 
