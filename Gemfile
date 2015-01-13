@@ -16,7 +16,6 @@ gem 'foreman'
 group :development do
   gem 'bootstrap-sass', '~> 3.3.1'
   gem 'sass-rails'
-  gem 'uglifier'
   gem 'therubyracer'
 end
 
