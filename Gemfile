@@ -14,10 +14,5 @@ gem 'foreman'
 gem 'sass-rails'
 gem 'coffee-rails'
 gem 'uglifier'
-
-# Gems used only for assets and not required
-# in production environments by default.
-group :development do
-  gem 'bootstrap-sass', '~> 3.3.1'
-end
+gem 'bootstrap-sass', '~> 3.3.1'
 
