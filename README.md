@@ -9,7 +9,7 @@ Getting Started
 This is a standard Rails application, so it will be easy to get started!
 
 1. At the command prompt:
-    bundle install
+    bundle _1.17.3_ install
     rails s
 
 2. In your web browser, visit http://localhost:3000.
