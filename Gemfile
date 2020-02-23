@@ -12,7 +12,7 @@ gem 'jquery-rails'
 
 gem 'foreman'
 
-gem 'sass-rails'
+gem 'sass-rails', '~> 5.0.3'
 gem 'coffee-rails'
 gem 'uglifier'
 gem 'bootstrap-sass', '~> 3.3.1'
