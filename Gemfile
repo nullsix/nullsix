@@ -15,5 +15,5 @@ gem 'foreman'
 gem 'sass-rails', '~> 5.0.3'
 gem 'coffee-rails'
 gem 'uglifier'
-gem 'bootstrap-sass', '~> 3.3.1'
+gem 'bootstrap-sass', '~> 3.4.1'
 
