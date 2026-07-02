@@ -1,0 +1,123 @@
+:root {
+  --bg: #0d1419;
+  --card: #131e26;
+  --text: #e8eef2;
+  --muted: #9fb3bf;
+  --teal: #2596be;
+  --teal-bright: #3db2dd;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  background-color: var(--bg);
+}
+
+body {
+  margin: 0 auto;
+  max-width: 44em;
+  padding: 3em 1.25em 2em;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--text);
+  text-align: center;
+}
+
+a {
+  color: var(--teal-bright);
+}
+
+a:hover {
+  color: var(--text);
+}
+
+header .mark {
+  width: 110px;
+  max-width: 30vw;
+  height: auto;
+}
+
+header h1 {
+  font-family: 'Alata', sans-serif;
+  color: var(--teal);
+  font-size: 4em;
+  margin: 0.1em 0 0;
+  letter-spacing: 0.04em;
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 1.15em;
+  margin: 0.4em 0 0;
+}
+
+.ethos {
+  font-style: italic;
+  color: var(--muted);
+  margin: 1.6em 0 0;
+}
+
+.projects {
+  margin-top: 3em;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  text-align: left;
+}
+
+.card {
+  background-color: var(--card);
+  border: 1px solid #1d2c37;
+  border-radius: 8px;
+  padding: 1.1em 1.3em 1.2em;
+}
+
+.card.flagship {
+  grid-column: 1 / -1;
+  border-color: var(--teal);
+}
+
+.card h2 {
+  font-family: 'Alata', sans-serif;
+  font-size: 1.3em;
+  margin: 0 0 0.4em;
+  color: var(--text);
+}
+
+.card h2 a {
+  text-decoration: none;
+}
+
+.card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.badge {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.55em;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--teal-bright);
+  border: 1px solid var(--teal);
+  border-radius: 999px;
+  padding: 0.25em 0.8em;
+  margin-left: 0.6em;
+}
+
+code {
+  color: var(--teal-bright);
+}
+
+footer {
+  margin-top: 3.5em;
+  color: var(--muted);
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .projects { grid-template-columns: 1fr; }
+  header h1 { font-size: 3em; }
+}

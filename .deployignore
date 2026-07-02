@@ -1,0 +1,6 @@
+# Source-only files; not part of the public site
+README.md
+*/README.md
+*/.deployignore
+images/*
+.gitignore

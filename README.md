@@ -1,17 +1,17 @@
-nullsix
-===
+# nullsix
 
-This is the web application that represents the main nullsix website.
+The maker lab of [Kyle Tolle](https://kyletolle.com): small tools, toys, and experiments, built and shipped.
 
-Getting Started
----
+Served at [kyletolle.com/nullsix/](https://kyletolle.com/nullsix/) (nullsix.com points there). Static HTML and CSS, no build step.
 
-This is a standard Rails application, so it will be easy to get started!
+## History
 
-1. At the command prompt:
-    bundle _1.17.3_ install
-    rails s
+nullsix started in 2008 as a software and knowledge company that never quite launched. This repo held its Rails site (2013), later preserved as a static scrape. In 2026 it was revived as this project dashboard. The old site lives on in git history.
 
-2. In your web browser, visit http://localhost:3000.
+## Layout
 
-3. You should see the nullsix home page.
+- `index.html`, `style.css` — the dashboard
+- `assets/` — the nullsix mark (`nullsix-2025.svg`)
+- `colors/` — a color playground
+- `random/` — a dice roller where the URL is the roll
+- `images/` — original logo source files (not deployed)
