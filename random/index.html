@@ -129,7 +129,7 @@
   </main>
 
   <footer>
-    A <a href="https://kyletolle.com">kyletolle.com</a> project &middot;
+    A <a href="/nullsix/">nullsix</a> <span id="footer-noun">project</span> &middot;
     revived from a retired serverless experiment
   </footer>
 
@@ -219,7 +219,23 @@
     li.textContent = `${emoji} ${notation} → ${result.total}`;
     logEl.prepend(li);
     while (logEl.children.length > 12) logEl.lastChild.remove();
+    rollNoun(); // every roll also reshuffles what kind of thing this is
   }
+
+  // --- the footer can't decide what kind of project this is, so it rolls ---
+  const NOUNS = [
+    'project', 'passion', 'experiment', 'toy', 'trinket', 'contraption',
+    'gadget', 'curio', 'plaything', 'diversion', 'gizmo', 'artifact',
+    'oddity', 'caprice', 'folly', 'lark', 'romp', 'escapade', 'indulgence',
+    'obsession', 'fixation', 'dalliance', 'whim', 'fancy', 'confection',
+    'bauble', 'doohickey', 'thingamajig', 'widget', 'apparatus', 'mechanism',
+    'invention', 'concoction', 'creation', 'endeavor', 'undertaking',
+    'venture', 'pursuit', 'hobby', 'amusement', 'novelty', 'curiosity',
+    'brainchild', 'labor of love', 'side quest', 'rabbit hole', 'joyride',
+    'boondoggle', 'distraction', 'flight of fancy', 'devotion',
+  ];
+  const footerNoun = document.getElementById('footer-noun');
+  function rollNoun() { footerNoun.textContent = NOUNS[cryptoDraw(1, NOUNS.length)[0] - 1]; }
 
   // --- entropy sources: browser rolls locally; the rest ask the Worker ---
   const API = 'https://roll.nullsix.workers.dev';

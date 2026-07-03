@@ -140,7 +140,7 @@
   </section>
 
   <footer>
-    A <a href="https://kyletolle.com">kyletolle.com</a> project &middot;
+    A <a href="/nullsix/">nullsix</a> <span id="footer-noun">project</span> &middot;
     revived from a retired serverless experiment
   </footer>
 
@@ -195,6 +195,22 @@
   const copiedEl = document.getElementById('copied');
   let current = { r: 16, g: 41, b: 77 };
 
+  // The footer can't decide what kind of project this is, so it reshuffles
+  // with every color. (Kept in sync with the same list on /nullsix/random/.)
+  const NOUNS = [
+    'project', 'passion', 'experiment', 'toy', 'trinket', 'contraption',
+    'gadget', 'curio', 'plaything', 'diversion', 'gizmo', 'artifact',
+    'oddity', 'caprice', 'folly', 'lark', 'romp', 'escapade', 'indulgence',
+    'obsession', 'fixation', 'dalliance', 'whim', 'fancy', 'confection',
+    'bauble', 'doohickey', 'thingamajig', 'widget', 'apparatus', 'mechanism',
+    'invention', 'concoction', 'creation', 'endeavor', 'undertaking',
+    'venture', 'pursuit', 'hobby', 'amusement', 'novelty', 'curiosity',
+    'brainchild', 'labor of love', 'side quest', 'rabbit hole', 'joyride',
+    'boondoggle', 'distraction', 'flight of fancy', 'devotion',
+  ];
+  const footerNoun = document.getElementById('footer-noun');
+  function rollNoun() { footerNoun.textContent = NOUNS[Math.floor(Math.random() * NOUNS.length)]; }
+
   function apply(c, { record = true } = {}) {
     current = c;
     const hex = toHex(c);
@@ -202,6 +218,7 @@
     document.body.style.setProperty('--fg', luminance(c) > 0.35 ? '#111111' : '#ffffff');
     hexEl.textContent = hex;
     rgbEl.textContent = `rgb(${c.r}, ${c.g}, ${c.b})`;
+    rollNoun();
     if (record) remember(hex);
   }
   function reroll() { apply(randomColor()); }
