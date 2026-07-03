@@ -61,6 +61,13 @@
     opacity: 0.65; font-family: ui-monospace, Menlo, Consolas, monospace; }
   #log li { margin: 3px 0; }
 
+  /* entropy source selector */
+  #sources { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    margin-top: 1.1em; }
+  #sources button { font-size: 0.85rem; padding: 6px 12px; opacity: 0.7; }
+  #sources button.sel { opacity: 1; border-color: #8af32e; color: #8af32e;
+    background: rgba(138,243,46,0.12); }
+
   /* cloud-roll receipt */
   #receipt { margin-top: 1.2em; max-width: min(520px, 90vw); }
   #receipt-line { font-family: ui-monospace, Menlo, Consolas, monospace;
@@ -91,7 +98,13 @@
       <input type="text" id="custom" placeholder="3d8+1d4+2" autocomplete="off"
         spellcheck="false" />
       <button class="go" id="roll">Roll</button>
-      <button id="cloud" title="Same dice, different computer: a Cloudflare Worker rolls for you">&#9729;&#65039; Cloud roll</button>
+    </div>
+
+    <div id="sources" role="group" aria-label="Source of randomness">
+      <button data-s="browser" class="sel" title="Your browser's CSPRNG. Instant, offline, unimpeachable.">&#127922; browser</button>
+      <button data-s="lava" title="Cloudflare's CSPRNG — entropy famously seeded by LavaRand, the lava-lamp wall in their San Francisco lobby.">&#128293; lava lamps</button>
+      <button data-s="atmospheric" title="random.org: radio-received atmospheric noise, cryptographically signed.">&#127785;&#65039; atmosphere</button>
+      <button data-s="quantum" title="ANU QRNG: measurements of quantum vacuum fluctuations. Yes, really.">&#9883;&#65039; quantum</button>
     </div>
 
     <div id="receipt" hidden>
@@ -104,9 +117,12 @@
 
     <p class="hint">The URL is the roll: <code>/random/#2d6+3</code> parses the
       hash as dice notation and rolls it on load. Share a link, share a roll.
-      Space rerolls. The <strong>&#9729;&#65039; Cloud roll</strong> button asks a
-      <a href="https://roll.nullsix.workers.dev/" style="color:#8af32e">tiny dice API</a>
-      running on Cloudflare's edge to roll instead &mdash; and shows you the receipt.</p>
+      Space rerolls. And you can pick your entropy: your browser, Cloudflare's
+      lava-lamp wall, random.org's atmospheric noise, or the quantum vacuum at
+      ANU &mdash; every roll comes with a
+      <a href="https://roll.nullsix.workers.dev/" style="color:#8af32e">receipt</a>.
+      (For fairness, your browser's CSPRNG is already beyond reproach &mdash;
+      the rest is entropy tourism. That's the point.)</p>
 
     <ol id="log" reversed></ol>
   </main>
@@ -149,12 +165,24 @@
     return { terms: parsed };
   }
 
+  // Browser CSPRNG with rejection sampling: exact uniformity, no modulo bias.
+  function cryptoDraw(count, sides) {
+    const out = [];
+    const buf = new Uint32Array(Math.min(Math.max(count * 2, 8), 8192));
+    const limit = Math.floor(0x100000000 / sides) * sides;
+    while (out.length < count) {
+      crypto.getRandomValues(buf);
+      for (const v of buf) {
+        if (v < limit) { out.push((v % sides) + 1); if (out.length === count) break; }
+      }
+    }
+    return out;
+  }
   function roll(terms) {
     let total = 0;
     const detail = terms.map(t => {
       if (t.kind === 'flat') { total += t.sign * t.value; return t; }
-      const rolls = Array.from({ length: t.count },
-        () => 1 + Math.floor(Math.random() * t.sides));
+      const rolls = cryptoDraw(t.count, t.sides);
       total += t.sign * rolls.reduce((a, b) => a + b, 0);
       return { ...t, rolls };
     });
@@ -174,8 +202,7 @@
   const receiptLine = document.getElementById('receipt-line');
   const receiptJson = document.getElementById('receipt-json');
 
-  function render(notation, result, { cloud = false } = {}) {
-    if (!cloud) receiptEl.hidden = true; // local rolls clear the cloud receipt
+  function render(notation, result, { emoji = '🎲' } = {}) {
     notationEl.textContent = notation;
     totalEl.textContent = result.total;
     breakdownEl.innerHTML = result.detail.map(t => {
@@ -188,35 +215,63 @@
       return `<span>${sign}${t.count}d${t.sides}:</span> ${dice}`;
     }).join(' &nbsp; ').replace(/^<span>\+/, '<span>'); // drop leading +
     const li = document.createElement('li');
-    li.textContent = `${cloud ? '☁️ ' : ''}${notation} → ${result.total}`;
+    li.textContent = `${emoji} ${notation} → ${result.total}`;
     logEl.prepend(li);
     while (logEl.children.length > 12) logEl.lastChild.remove();
   }
 
-  function doRoll(notation, { setHash = true } = {}) {
-    const p = parse(notation);
-    if (p.error) { errorEl.textContent = p.error; return; }
-    errorEl.textContent = '';
+  // --- entropy sources: browser rolls locally; the rest ask the Worker ---
+  const API = 'https://roll.nullsix.workers.dev';
+  const SOURCE_INFO = {
+    browser:     { emoji: '🎲' },
+    lava:        { emoji: '🔥' },
+    atmospheric: { emoji: '🌩️' },
+    quantum:     { emoji: '⚛️' },
+  };
+  let source = 'browser';
+  document.querySelectorAll('#sources button').forEach((b) =>
+    b.addEventListener('click', () => {
+      source = b.dataset.s;
+      document.querySelectorAll('#sources button').forEach((x) =>
+        x.classList.toggle('sel', x === b));
+      doRoll(currentNotation); // switching entropy deserves an immediate roll
+    }));
+
+  function receiptFor(data, ms, url) {
+    const near = data.edge?.city ? ` · saw you near ${data.edge.city}` : '';
+    const colo = data.edge?.colo || 'the edge';
+    const lines = {
+      lava: `🔥 rolled at Cloudflare ${colo} · CSPRNG seeded downstream of the ` +
+            `lava-lamp wall · ${ms}ms${near}`,
+      atmospheric: `🌩️ atmospheric noise via random.org · serial ` +
+            `#${data.signed?.[0]?.serialNumber ?? '?'} · cryptographically signed · ${ms}ms`,
+      quantum: `⚛️ quantum vacuum fluctuations, measured at ANU · ${ms}ms`,
+    };
+    receiptLine.textContent = lines[data.source?.id] || `☁️ rolled remotely · ${ms}ms`;
+    receiptJson.textContent = `GET ${url}\n\n` + JSON.stringify(data, null, 2);
+    receiptEl.hidden = false;
+  }
+
+  function setNotation(notation, setHash) {
     currentNotation = notation.replace(/\s+/g, '').toLowerCase();
     if (setHash && '#' + currentNotation !== location.hash) {
       // replaceState keeps rerolls from flooding browser history.
       history.replaceState(null, '', '#' + currentNotation);
     }
-    render(currentNotation, roll(p.terms));
   }
 
-  // --- cloud roll: same dice, rolled by a Cloudflare Worker, receipt shown ---
-  const API = 'https://roll.nullsix.workers.dev';
-
-  async function doCloudRoll(notation) {
+  function doRoll(notation, { setHash = true } = {}) {
     const p = parse(notation); // validate locally first: no wasted round-trips
     if (p.error) { errorEl.textContent = p.error; return; }
     errorEl.textContent = '';
-    currentNotation = notation.replace(/\s+/g, '').toLowerCase();
-    if ('#' + currentNotation !== location.hash) {
-      history.replaceState(null, '', '#' + currentNotation);
-    }
-    const url = `${API}/${currentNotation}`;
+    setNotation(notation, setHash);
+    if (source !== 'browser') return doRemoteRoll(p);
+    receiptEl.hidden = true;
+    render(currentNotation, roll(p.terms));
+  }
+
+  async function doRemoteRoll(p) {
+    const url = `${API}/${currentNotation}?source=${source}`;
     const t0 = performance.now();
     let data;
     try {
@@ -224,7 +279,8 @@
       data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
     } catch (e) {
-      errorEl.textContent = `cloud unreachable (${e.message}) — local dice still work`;
+      errorEl.textContent = `${SOURCE_INFO[source].emoji} ${source} unavailable ` +
+        `(${e.message}) — 🎲 browser dice still work`;
       return;
     }
     const ms = Math.round(performance.now() - t0);
@@ -237,13 +293,9 @@
       return { kind: 'dice', sign: m[1] ? -1 : 1,
                count: +m[2], sides: +m[3], rolls: d.rolls };
     });
-    render(data.notation, { total: data.total, detail }, { cloud: true });
-    // colo = the datacenter that rolled; city = where the request came from.
-    const where = data.edge?.colo || 'the edge';
-    const near = data.edge?.city ? ` · saw you near ${data.edge.city}` : '';
-    receiptLine.textContent = `☁️ rolled at Cloudflare ${where} · ${ms}ms round trip${near}`;
-    receiptJson.textContent = `GET ${url}\n\n` + JSON.stringify(data, null, 2);
-    receiptEl.hidden = false;
+    render(data.notation, { total: data.total, detail },
+      { emoji: SOURCE_INFO[data.source?.id]?.emoji || '☁️' });
+    receiptFor(data, ms, url);
   }
 
   // --- wiring ---
@@ -260,8 +312,6 @@
     b.addEventListener('click', () => doRoll(b.dataset.n)));
   document.getElementById('roll').addEventListener('click', () =>
     doRoll(customEl.value || currentNotation));
-  document.getElementById('cloud').addEventListener('click', () =>
-    doCloudRoll(customEl.value || currentNotation));
   window.addEventListener('hashchange', () =>
     doRoll(decodeURIComponent(location.hash.slice(1)) || '2d6', { setHash: false }));
 
