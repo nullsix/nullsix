@@ -1,10 +1,17 @@
 :root {
-  --bg: #0d1419;
-  --card: #131e26;
+  --bg: #10294d;
+  --card: #0b1c36;
+  --card-border: #1d3a66;
   --text: #e8eef2;
-  --muted: #9fb3bf;
+  --muted: #a9bdd4;
   --teal: #2596be;
-  --teal-bright: #3db2dd;
+  --teal-shade: #3db2dd;
+  --blue: #3b93ff;
+  --blue-shade: #6eafff;
+  --pink: #ff4598;
+  --pink-shade: #ff78b4;
+  --green: #8af32e;
+  --green-shade: #a5f65e;
 }
 
 * { box-sizing: border-box; }
@@ -23,7 +30,7 @@ body {
 }
 
 a {
-  color: var(--teal-bright);
+  color: var(--teal-shade);
 }
 
 a:hover {
@@ -66,25 +73,51 @@ header h1 {
 
 .card {
   background-color: var(--card);
-  border: 1px solid #1d2c37;
+  border: 1px solid var(--card-border);
   border-radius: 8px;
   padding: 1.1em 1.3em 1.2em;
 }
 
 .card.flagship {
   grid-column: 1 / -1;
-  border-color: var(--teal);
 }
 
 .card h2 {
   font-family: 'Alata', sans-serif;
   font-size: 1.3em;
-  margin: 0 0 0.4em;
-  color: var(--text);
+  margin: 0 0 0.5em;
+  padding-bottom: 0.3em;
 }
 
 .card h2 a {
   text-decoration: none;
+  color: inherit;
+}
+
+.card h2 a:hover {
+  color: var(--text);
+}
+
+/* Color-coded heads, carried over from the original nullsix site:
+   primary for the title, its lighter shade as the underline. */
+.teal-head h2 {
+  color: var(--teal-shade);
+  border-bottom: 4px solid var(--teal);
+}
+
+.blue-head h2 {
+  color: var(--blue);
+  border-bottom: 4px solid var(--blue-shade);
+}
+
+.pink-head h2 {
+  color: var(--pink);
+  border-bottom: 4px solid var(--pink-shade);
+}
+
+.green-head h2 {
+  color: var(--green);
+  border-bottom: 4px solid var(--green-shade);
 }
 
 .card p {
@@ -94,12 +127,15 @@ header h1 {
 }
 
 .badge {
+  display: inline-block;
+  white-space: nowrap;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: normal;
   font-size: 0.55em;
   vertical-align: middle;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--teal-bright);
+  color: var(--teal-shade);
   border: 1px solid var(--teal);
   border-radius: 999px;
   padding: 0.25em 0.8em;
@@ -107,7 +143,7 @@ header h1 {
 }
 
 code {
-  color: var(--teal-bright);
+  color: var(--green);
 }
 
 footer {
