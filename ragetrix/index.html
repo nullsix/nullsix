@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CHILLTRIX</title>
+<script type="module" src="./jelly.js"></script>
+<style>
+  :root {
+    --ground: #060404;
+    --blood: #ff2b2b;
+    --trail: #7a0d0d;
+    --ember: #ff6b3d;
+    --ash: #8a7676;
+    --chill: #63b3cf;
+    --bone: #f2e9e9;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--ground);
+    font-family: var(--mono);
+    color: var(--bone);
+    overflow: hidden;
+  }
+  #rain {
+    position: fixed;
+    inset: 0;
+    display: block;
+  }
+  .stage {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 1.5rem;
+  }
+  .wordmark {
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.45em;
+    margin-right: -0.45em; /* optically recenter tracked text */
+    color: var(--bone);
+    user-select: none;
+    transition: color 400ms ease, text-shadow 400ms ease;
+  }
+  .wordmark .mood { color: var(--chill); transition: color 400ms ease; }
+  .wordmark .x { color: var(--ash); transition: color 400ms ease; }
+  body.rage .wordmark {
+    text-shadow: 0 0 18px rgba(255, 43, 43, 0.55);
+    animation: glitch 180ms steps(2) infinite;
+  }
+  body.rage .wordmark .mood { color: var(--blood); }
+  body.rage .wordmark .x { color: var(--ember); }
+  @keyframes glitch {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(-2px, 1px); }
+    50%  { transform: translate(2px, -1px); }
+    75%  { transform: translate(-1px, -1px); }
+    100% { transform: translate(0, 0); }
+  }
+  .boxwrap {
+    width: min(34rem, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  jelly-textarea {
+    width: 100%;
+    --jelly-fill: rgba(18, 10, 10, 0.88);
+    --jelly-label: var(--bone);
+    --jelly-textarea-min-height: 120px;
+    --jelly-textarea-font-size: 16.5px;
+    transition: filter 300ms ease;
+  }
+  jelly-textarea::part(textarea) {
+    font-family: var(--mono);
+    caret-color: var(--chill);
+  }
+  body.rage jelly-textarea::part(textarea) { caret-color: var(--blood); }
+  body.rage jelly-textarea {
+    --jelly-fill: rgba(42, 8, 8, 0.92);
+    filter: drop-shadow(0 0 26px rgba(255, 43, 43, 0.45));
+    animation: shake 90ms linear infinite;
+  }
+  @keyframes shake {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(1px, -1px); }
+    50%  { transform: translate(-1px, 1px); }
+    75%  { transform: translate(1px, 1px); }
+    100% { transform: translate(0, 0); }
+  }
+  .status {
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ash);
+    transition: color 300ms ease;
+    user-select: none;
+  }
+  body.rage .status {
+    color: var(--ember);
+    text-shadow: 0 0 10px rgba(255, 107, 61, 0.5);
+  }
+  jelly-button::part(button) { font-family: var(--mono); letter-spacing: 0.12em; }
+  @media (prefers-reduced-motion: reduce) {
+    body.rage .wordmark { animation: none; }
+    body.rage jelly-textarea { animation: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+<div class="stage">
+  <div class="wordmark"><span class="mood" id="mood">CHILL</span><span class="x">TRIX</span></div>
+  <jelly-theme mode="dark" accent="#63b3cf" id="theme">
+    <div class="boxwrap">
+      <jelly-textarea id="input" size="large" label="rage input"
+        placeholder="type something. calmly. or don't."></jelly-textarea>
+      <jelly-button id="breathe" size="small">BREATHE</jelly-button>
+    </div>
+  </jelly-theme>
+  <div class="status" id="status">status: chill</div>
+</div>
+<script>
+(function () {
+  var canvas = document.getElementById('rain');
+  var ctx = canvas.getContext('2d');
+  var input = document.getElementById('input');
+  var mood = document.getElementById('mood');
+  var theme = document.getElementById('theme');
+  var breathe = document.getElementById('breathe');
+  var statusEl = document.getElementById('status');
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- rage detection ---------------------------------------------------
+  // A streak of consecutive uppercase letters typed = rage. Lowercase cools it.
+  // keydown is composed, so it escapes jelly-textarea's shadow DOM intact.
+  var RAGE_THRESHOLD = 4;
+  var streak = 0;
+  var raging = false;
+
+  input.addEventListener('keydown', function (e) {
+    var ch = e.key;
+    if (ch.length !== 1 || !/[a-zA-Z]/.test(ch)) { return; }
+    if (ch === ch.toUpperCase()) {
+      streak++;
+      if (streak >= RAGE_THRESHOLD) { setRage(true); }
+      // every capital keystroke shoves the membrane; pre-rage ones are
+      // warning tremors, full rage detonates the edges outward
+      detonate(raging ? 1 : (streak / RAGE_THRESHOLD) * 0.3);
+    } else {
+      streak = 0;
+      setRage(false);
+    }
+  });
+
+  // --- soft-body abuse ----------------------------------------------------
+  // jelly-ui keeps its physics blob on a public `body` property and its
+  // engine wakes via requestFrame(). Undocumented, so every touch is guarded.
+  var RAGE_TUNING = {
+    membraneSpring: 52,   // looser springs: wobble travels further
+    membraneDamping: 7,   // less damping: it keeps ringing
+    maxBulge: 64,         // lift the bulge clamp so edges can truly blow out
+    insideLocalBulgeImpulse: 620
+  };
+  var calmTuning = null;
+
+  function tunePhysics(angry) {
+    var body = input.body;
+    if (!body || !body.config) { return; }
+    if (angry) {
+      if (!calmTuning) {
+        calmTuning = {};
+        for (var key in RAGE_TUNING) { calmTuning[key] = body.config[key]; }
+      }
+      Object.assign(body.config, RAGE_TUNING);
+    } else if (calmTuning) {
+      Object.assign(body.config, calmTuning);
+    }
+  }
+
+  function detonate(strength) {
+    if (reducedMotion) { return; }
+    var body = input.body;
+    if (!body || !body.config || typeof body.centerPop !== 'function') { return; }
+    // uniform outward pop from the center...
+    body.centerPop(2.2 * strength);
+    // ...plus asymmetric kicks at random ring points so it reads as an
+    // explosion, not a polite breath
+    if (typeof body.addMembraneImpulse === 'function' && body.membrane) {
+      var n = body.membrane.length;
+      var kicks = strength >= 1 ? 4 : 1;
+      for (var k = 0; k < kicks; k++) {
+        body.addMembraneImpulse(
+          Math.floor(Math.random() * n),
+          body.config.insideLocalBulgeImpulse * strength * (0.9 + Math.random() * 0.9),
+          body.config.rippleWidth * (2 + Math.random() * 3)
+        );
+      }
+    }
+    if (typeof input.requestFrame === 'function') { input.requestFrame(); }
+  }
+
+  breathe.addEventListener('click', function () {
+    input.value = '';
+    streak = 0;
+    setRage(false);
+    input.focus();
+  });
+
+  function setRage(on) {
+    if (raging === on) { return; }
+    raging = on;
+    tunePhysics(on);
+    document.body.classList.toggle('rage', on);
+    mood.textContent = on ? 'RAGE' : 'CHILL';
+    document.title = on ? 'RAGETRIX' : 'CHILLTRIX';
+    theme.setAttribute('accent', on ? '#ff2b2b' : '#63b3cf');
+    statusEl.textContent = on ? 'status: RAGE DETECTED' : 'status: chill';
+    breathe.textContent = on ? 'BREATHE.' : 'BREATHE';
+  }
+
+  // --- red matrix rain ----------------------------------------------------
+  var GLYPHS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEF<>/!?#$%&';
+  var ANGRY_WORDS = ['RAGE', 'ARGH', 'GRRR', 'WHY', 'NO', 'FURY', 'CAPS'];
+  var FONT_SIZE = 18;
+  var columns = [];
+  var intensity = 0; // eases toward 1 in rage, 0 in calm
+
+  function sizeCanvas() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var count = Math.ceil(window.innerWidth / FONT_SIZE);
+    columns = [];
+    for (var i = 0; i < count; i++) { columns.push(makeColumn(true)); }
+    ctx.fillStyle = '#060404';
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  }
+
+  function makeColumn(scatter) {
+    var word = Math.random() < 0.12
+      ? ANGRY_WORDS[Math.floor(Math.random() * ANGRY_WORDS.length)]
+      : null;
+    return {
+      y: scatter ? Math.random() * -window.innerHeight : -FONT_SIZE,
+      speed: 3 + Math.random() * 5,
+      word: word,
+      wordIndex: 0
+    };
+  }
+
+  function glyphFor(col) {
+    // angry words only surface once the storm is actually raging
+    if (col.word && raging) {
+      var ch = col.word[col.wordIndex % col.word.length];
+      col.wordIndex++;
+      return ch;
+    }
+    return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+  }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function frame() {
+    // ease intensity: 0 = chill drizzle, 1 = full rage storm
+    var target = raging ? 1 : 0;
+    intensity += (target - intensity) * (raging ? 0.06 : 0.03);
+
+    // trail fade: long lazy trails when chill, tight aggressive ones when raging
+    ctx.fillStyle = 'rgba(6, 4, 4, ' + lerp(0.05, 0.1, intensity) + ')';
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+    ctx.font = '700 ' + FONT_SIZE + 'px ui-monospace, Menlo, Consolas, monospace';
+    var speedScale = lerp(0.12, 1, intensity) * (reducedMotion ? 0.35 : 1);
+    // sparse gentle rain (2 of every 7 columns) filling in to a full wall
+    var coverage = Math.max(2, Math.ceil(intensity * 7));
+    // glacial blue -> blood red
+    var hr = Math.round(lerp(120, 255, intensity));
+    var hg = Math.round(lerp(170, 43, intensity));
+    var hb = Math.round(lerp(195, 43, intensity));
+    var tr = Math.round(lerp(35, 122, intensity));
+    var tg = Math.round(lerp(60, 13, intensity));
+    var tb = Math.round(lerp(75, 13, intensity));
+    var headAlpha = lerp(0.5, 1, intensity);
+    var trailAlpha = lerp(0.4, 0.85, intensity);
+
+    for (var i = 0; i < columns.length; i++) {
+      if (i % 7 >= coverage) { continue; }
+      var col = columns[i];
+      var x = i * FONT_SIZE;
+
+      ctx.fillStyle = 'rgba(' + tr + ',' + tg + ',' + tb + ',' + trailAlpha + ')';
+      ctx.fillText(glyphFor(col), x, col.y - FONT_SIZE);
+      ctx.fillStyle = 'rgba(' + hr + ',' + hg + ',' + hb + ',' + headAlpha + ')';
+      ctx.fillText(glyphFor(col), x, col.y);
+
+      col.y += col.speed * speedScale;
+      if (col.y > window.innerHeight + FONT_SIZE * 2) {
+        columns[i] = makeColumn(false);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', sizeCanvas);
+  sizeCanvas();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
