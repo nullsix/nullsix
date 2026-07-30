@@ -1,0 +1,1678 @@
+/* HELIOCIDE — dark cosmic aesthetic, mobile-portrait first. Shared by index.html and
+   gallery.html.
+
+   ONE SCALE UNIT. Everything on the duel screen is expressed in `--u`, a length that equals
+   ~1px at the 390x844 design size:
+
+       --u: min(100vw / 394, 100svh / 794)
+
+   so the entire layout shrinks to fit a short viewport instead of clipping or scrolling, and
+   grows (to a cap) on desktop. Card sizes are therefore just design-pixel widths:
+   board/active 150, hand 100, bench chip 212x66, zoom 300 — the four sizes gallery.html
+   reproduces so card legibility can be judged on a real phone.
+
+   Dark only, on purpose: the sun got eaten. Motion is honoured via prefers-reduced-motion.
+
+   THE PALETTE (M4.5) is not decoration — it is the book's. Every colour in this file comes from
+   the Thoughts of an Eaten Sun cover or thoughtsofaneatensun.com, per THEME.md's binding
+   "Palette" section: navy ground, plum and dusk-purple seconds, cream text, and one gradient
+   ramp per energy type. The ramps do double duty as card-frame tints and as the wash painted
+   through the ASCII art (`.ascii`, background-clip: text). One colour is deliberately spent
+   almost nowhere: `--void` (#7f0984) belongs to v2's Ascension Ritual. */
+
+/* ------------------------------------------------------------------ reset + tokens */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Must outrank the component `display` rules below (.overlay is display:flex) or `hidden`
+   silently stops hiding — which shows up as a permanent dark scrim over the board. */
+[hidden] {
+  display: none !important;
+}
+
+a {
+  color: var(--gold);
+}
+
+:root {
+  color-scheme: dark;
+
+  /* ---------------------------------------------------------------- the book's palette
+     Binding (THEME.md "Palette"): lifted from Caleb's Thoughts of an Eaten Sun cover and the
+     thoughtsofaneatensun.com stylesheet. The cover's sunburst rays carry all five type hues
+     natively, so the game can wear the book's colours without inventing any. */
+  --navy: #0c0e3d; /* ground — site navy (cover reads #0d0e37) */
+  --plum: #2b2035; /* secondary */
+  --dusk: #453651; /* tertiary */
+  --cream: #f3f0ee; /* the title cream */
+
+  /* One legible stop per type — mirrors TYPES[].color in cards.js. Keep the two in step. */
+  --bone: #d3c49d;
+  --ember: #f18142;
+  --rot: #63a65d;
+  --gold: #f9d253;
+  --breath: #76869f;
+  --breath-lit: #a9b8cc; /* the Song ramp's top stop, for small text on the dark ground */
+
+  /* RESERVED — the Void. The site's lone vivid purple belongs to the v2 Ascension Ritual (the
+     rift, the circle, Dreadnought disruption). Nothing in v1 may spend it except the one
+     thematically-earned glow under a loss: the wrong magic is what unmade you. */
+  --void: #7f0984;
+
+  /* Per-type gradient ramps, verbatim from THEME.md. These paint the ASCII art through
+     `background-clip: text`, so a creature's art is literally made of its type's light. */
+  --grad-bone: linear-gradient(158deg, #f3f0ee, #d3c49d);
+  --grad-ember: linear-gradient(158deg, #db502f, #e76c42, #f18142, #f5a74a, #f9d253);
+  --grad-rot: linear-gradient(158deg, #8fbf6a, #63a65d, #3d5a3c);
+  --grad-gold: linear-gradient(158deg, #f9d253, #f8d858, #cbb93e);
+  --grad-breath: linear-gradient(158deg, #a9b8cc, #76869f, #497285);
+
+  --ink: #f3f0ee;
+  --ink-dim: #a49bab;
+  --bad: #db502f; /* the fire ramp's deepest stop — alarm without leaving the palette */
+
+  /* neutral fallback so a card without a type class still renders */
+  --tc: #8b8b9a;
+  --tcr: 139, 139, 154;
+  --tg: var(--grad-bone);
+
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  /* Glyph stack: keeps the dagger and the dingbats rendering as TEXT on iOS instead of being
+     substituted into a colour-emoji font (see also font-variant-emoji below). */
+  --font-glyph: 'Iowan Old Style', Palatino, 'Palatino Linotype', 'Times New Roman', 'Apple Symbols',
+    'Segoe UI Symbol', 'Noto Sans Symbols 2', 'DejaVu Sans', serif;
+}
+
+/* A type class carries three things: the flat colour, its rgb triplet (for rgba() tints), and
+   the ramp the ASCII art is washed with. */
+.t-bone {
+  --tc: #d3c49d;
+  --tcr: 211, 196, 157;
+  --tg: var(--grad-bone);
+}
+.t-ember {
+  --tc: #f18142;
+  --tcr: 241, 129, 66;
+  --tg: var(--grad-ember);
+}
+.t-rot {
+  --tc: #63a65d;
+  --tcr: 99, 166, 93;
+  --tg: var(--grad-rot);
+}
+.t-gold {
+  --tc: #f9d253;
+  --tcr: 249, 210, 83;
+  --tg: var(--grad-gold);
+}
+.t-breath {
+  --tc: #76869f;
+  --tcr: 118, 134, 159;
+  --tg: var(--grad-breath);
+}
+
+/* Navy ground, a dusk-purple haze overhead, and the eaten sun still burning below the floor. */
+body {
+  background-color: var(--navy);
+  background-image:
+    radial-gradient(120% 58% at 50% -10%, rgba(69, 54, 81, 0.75), transparent 62%),
+    radial-gradient(100% 46% at 50% 108%, rgba(219, 80, 47, 0.2), transparent 64%),
+    radial-gradient(64% 42% at 84% 36%, rgba(43, 32, 53, 0.8), transparent 72%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glyph,
+.pip,
+.eff,
+.badge,
+.strip-chev,
+.back-mark,
+.legend-row .glyph {
+  font-family: var(--font-glyph);
+  font-variant-emoji: text;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ the card */
+
+.card {
+  --cw: 100;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: calc(var(--cw) * var(--u));
+  height: calc(var(--cw) * 1.4 * var(--u));
+  font-size: calc(var(--cw) / 8.6 * var(--u));
+  padding: 0.3em 0.34em 0.32em;
+  gap: 0.16em;
+  border: 1px solid rgba(var(--tcr), 0.45);
+  border-radius: 0.5em;
+  background:
+    linear-gradient(170deg, rgba(var(--tcr), 0.2), rgba(var(--tcr), 0.05) 55%, rgba(var(--tcr), 0.1)),
+    linear-gradient(180deg, #2b2035, #0f1136);
+  box-shadow: 0 0.1em 0.35em rgba(0, 0, 0, 0.6);
+  color: var(--ink);
+  line-height: 1.15;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  /* long-press is tap-to-zoom, so suppress iOS's own long-press callout */
+  -webkit-touch-callout: none;
+}
+
+.card--board {
+  --cw: 150;
+}
+.card--hand {
+  --cw: 100;
+}
+
+.c-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.24em;
+  flex: 0 0 auto;
+}
+
+.c-head .glyph {
+  flex: 0 0 auto;
+  font-size: 1.15em;
+  line-height: 1;
+  color: var(--tc);
+  text-shadow: 0 0 0.4em rgba(var(--tcr), 0.55);
+}
+
+.c-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.92em;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.c-tier {
+  flex: 0 0 auto;
+  font-size: 0.9em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.06em 0.3em;
+  border: 1px solid rgba(var(--tcr), 0.5);
+  border-radius: 0.3em;
+  color: var(--tc);
+}
+
+.c-art {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tc);
+}
+
+.sigil {
+  width: 100%;
+  height: 100%;
+  max-height: 4em;
+  opacity: 0.94;
+  filter: drop-shadow(0 0 0.3em rgba(var(--tcr), 0.35));
+}
+
+/* ---- ASCII art (js/art.js), the other half of the art toggle
+   Every piece is exactly 32x16 printable-ASCII characters, so one font-size per card size fits
+   the whole catalog. The type's ramp is painted *through* the glyphs with background-clip:text —
+   at zoom size that reads as a gradient-washed plate; at 3px on a board card it is texture.
+   `width: max-content` + auto margins centre the block honestly: no piece has trailing
+   whitespace, and every piece's widest line is its full-width symmetric frame rule. */
+.ascii {
+  margin: 0 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  font-variant-ligatures: none;
+  white-space: pre;
+  line-height: 1;
+  width: max-content;
+  max-width: 100%;
+  background-image: var(--tg);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  pointer-events: none;
+}
+
+/* Fallback for engines without background-clip:text — a flat type-coloured plate, not a hole. */
+@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+  .ascii {
+    background-image: none;
+    color: var(--tc);
+  }
+}
+
+/* Board / hand: texture, not picture. Small enough that it reads as a woven field behind the
+   card's own type colour, and it lives in the art window so it can never crowd the text. */
+.card .ascii {
+  font-size: clamp(2.5px, calc(4 * var(--u)), 4px);
+  opacity: 0.5;
+}
+.card--chip .ascii {
+  font-size: clamp(1.5px, calc(1.8 * var(--u)), 2.4px);
+  opacity: 0.45;
+}
+.card .c-art {
+  overflow: hidden;
+}
+
+/* Right edge, below the header — a two-line card name owns the whole top row. */
+.c-badges {
+  position: absolute;
+  top: 2.55em;
+  right: 0.32em;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.14em;
+}
+
+.badge {
+  font-size: 0.6em;
+  line-height: 1;
+  font-weight: 700;
+  padding: 0.22em 0.3em;
+  border: 1px solid;
+  border-radius: 0.3em;
+  background: rgba(8, 9, 34, 0.86);
+}
+.b-rot {
+  color: var(--rot);
+  border-color: rgba(99, 166, 93, 0.75);
+}
+.b-stun {
+  color: #c2aed6;
+  border-color: rgba(139, 116, 168, 0.8);
+}
+.b-shield {
+  color: var(--breath-lit);
+  border-color: rgba(169, 184, 204, 0.75);
+}
+
+.c-hp {
+  position: relative;
+  flex: 0 0 auto;
+  height: 0.95em;
+  border-radius: 0.5em;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.c-hp-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(90deg, rgba(var(--tcr), 0.5), rgba(var(--tcr), 0.95));
+}
+.c-hp.is-mid .c-hp-fill {
+  background: linear-gradient(90deg, #cbb93e, #f9d253);
+}
+.c-hp.is-low .c-hp-fill {
+  background: linear-gradient(90deg, #db502f, #f18142);
+}
+
+.c-hp-num {
+  position: relative;
+  display: block;
+  text-align: right;
+  padding-right: 0.34em;
+  font-size: 0.66em;
+  line-height: 1.44em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+.c-hp-num i {
+  font-style: normal;
+  opacity: 0.6;
+}
+
+.c-pips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.14em;
+  min-height: 0.95em;
+  flex: 0 0 auto;
+}
+
+.c-noen,
+.c-type {
+  font-size: 0.6em;
+  letter-spacing: 0.05em;
+  color: rgba(243, 240, 238, 0.4);
+  text-transform: lowercase;
+}
+
+.pip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--tcr), 0.8);
+  background: rgba(var(--tcr), 0.22);
+  color: var(--tc);
+  font-size: 0.72em;
+  line-height: 1;
+}
+
+.pip--any {
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  color: transparent;
+}
+
+.pip--miss {
+  box-shadow: 0 0 0 1px rgba(219, 80, 47, 0.85);
+}
+
+.c-atks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12em;
+  flex: 0 0 auto;
+}
+
+.c-atk {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.16em 0.2em;
+  border-radius: 0.25em;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.c-cost {
+  display: flex;
+  gap: 0.1em;
+  flex: 0 0 auto;
+}
+
+.c-an {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.76em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c-dm {
+  flex: 0 0 auto;
+  font-size: 0.88em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.eff {
+  color: var(--gold);
+  padding-left: 0.25em;
+}
+
+.c-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  flex: 0 0 auto;
+  font-size: 0.62em;
+  color: var(--ink-dim);
+}
+.c-foot .glyph {
+  font-size: 1.1em;
+  text-shadow: none;
+}
+.c-foot .rc {
+  margin-left: auto;
+}
+
+.card--back {
+  background: repeating-linear-gradient(135deg, #2b2035 0 6px, #12143a 6px 12px);
+  border-color: rgba(249, 210, 83, 0.25);
+  align-items: center;
+  justify-content: center;
+}
+.back-mark {
+  font-size: 2em;
+  color: rgba(249, 210, 83, 0.5);
+}
+
+/* ---- bench chip: same DOM, re-laid out wide and short */
+
+.card--chip {
+  --cw: 212;
+  width: 100%;
+  height: 100%;
+  min-height: calc(66 * var(--u));
+  display: grid;
+  grid-template-columns: 2.5em 1fr auto;
+  grid-template-rows: auto auto;
+  align-content: center;
+  column-gap: 0.4em;
+  row-gap: 0.2em;
+  font-size: calc(14 * var(--u));
+  padding: 0.32em 0.45em;
+}
+.card--chip .c-head {
+  grid-area: 1 / 2 / 2 / 3;
+}
+.card--chip .c-art {
+  grid-area: 1 / 1 / 3 / 2;
+}
+.card--chip .c-hp {
+  grid-area: 2 / 2 / 3 / 3;
+}
+.card--chip .c-pips {
+  grid-area: 2 / 3 / 3 / 4;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+.card--chip .c-badges {
+  position: static;
+  grid-area: 1 / 3 / 2 / 4;
+  flex-direction: row;
+  align-items: center;
+}
+.card--chip .c-tier,
+.card--chip .c-atks,
+.card--chip .c-foot,
+.card--chip .c-flavor,
+.card--chip .c-noen,
+.card--chip .c-type {
+  display: none;
+}
+.card--chip .sigil {
+  max-height: 2.4em;
+}
+.card--chip .c-name {
+  font-size: 0.86em;
+}
+
+/* ---- zoom: the readable one. Only size that carries flavour + attack text. */
+
+.card--zoom {
+  --cw: 300;
+  height: auto;
+  min-height: calc(380 * var(--u));
+  font-size: calc(15 * var(--u));
+  padding: 0.7em 0.75em 0.75em;
+  gap: 0.3em;
+  border-width: 1px;
+  box-shadow: 0 0.4em 2em rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(var(--tcr), 0.25);
+}
+.card--zoom .c-name {
+  font-size: 1.15em;
+  -webkit-line-clamp: 2;
+}
+.card--zoom .c-art {
+  min-height: 5em;
+}
+.card--zoom .sigil {
+  max-height: 6em;
+}
+/* Zoom is where the art is actually art: 32 columns at ~11px lands a ~210px plate inside the
+   276px of usable card width, with the ramp reading top-light to bottom-deep. */
+.card--zoom .ascii {
+  font-size: calc(12 * var(--u));
+  opacity: 1;
+  filter: drop-shadow(0 0 calc(6 * var(--u)) rgba(var(--tcr), 0.25));
+}
+.card--zoom .c-badges {
+  top: 2.7em;
+  right: 0.7em;
+}
+.card--zoom .c-an {
+  font-size: 0.92em;
+  white-space: normal;
+}
+.card--zoom .c-atext {
+  padding: 0.1em 0.3em 0.3em 2.3em;
+  font-size: 0.74em;
+  color: var(--ink-dim);
+}
+.card--zoom .c-atext i {
+  font-family: var(--font-display);
+}
+.card--zoom .c-flavor {
+  margin-top: 0.15em;
+  padding-top: 0.4em;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.84em;
+  color: var(--ink-dim);
+}
+.card--zoom .c-hp {
+  height: 1.1em;
+}
+.card--zoom .c-hp-num {
+  line-height: 1.67em;
+}
+
+/* ------------------------------------------------------------------ duel screen */
+
+body.game {
+  --u: clamp(0.5px, min(100vw / 394, 100svh / 794), 1.9px);
+  overscroll-behavior: none;
+}
+
+/* svh fallback for engines without the small-viewport unit */
+@supports not (height: 100svh) {
+  body.game {
+    --u: clamp(0.5px, min(100vw / 394, 100vh / 794), 1.9px);
+  }
+}
+
+#app {
+  width: calc(390 * var(--u));
+  max-width: 100%;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: calc(6 * var(--u)) calc(10 * var(--u));
+  padding-bottom: max(calc(6 * var(--u)), env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  /* space-between spreads any leftover height evenly instead of dumping it in one gap —
+     the design is ~790 tall, so a 844-tall viewport has ~66px to distribute. */
+  justify-content: space-between;
+  gap: calc(4 * var(--u));
+  touch-action: manipulation;
+}
+
+.hud {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  flex: 0 0 auto;
+  height: calc(22 * var(--u));
+  font-size: calc(11 * var(--u));
+  color: var(--ink-dim);
+}
+.hud--foe {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.hud--you {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.hud-who {
+  min-width: 0;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hud-who em {
+  font-style: normal;
+  font-family: var(--font-display);
+  color: var(--gold);
+  opacity: 0.85;
+}
+
+.hud-score {
+  display: flex;
+  gap: calc(3 * var(--u));
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+.sp {
+  width: calc(9 * var(--u));
+  height: calc(9 * var(--u));
+  border-radius: 50%;
+  border: 1px solid rgba(249, 210, 83, 0.45);
+}
+.sp.on {
+  background: radial-gradient(circle at 35% 30%, #fdeaa6, var(--gold));
+  border-color: var(--gold);
+  box-shadow: 0 0 calc(5 * var(--u)) rgba(249, 210, 83, 0.7);
+}
+
+.hud-counts {
+  display: flex;
+  align-items: baseline;
+  gap: calc(3 * var(--u));
+  flex: 0 0 auto;
+  font-size: calc(9.5 * var(--u));
+}
+.hud-counts b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.hud-counts span {
+  opacity: 0.5;
+}
+
+.half {
+  display: flex;
+  gap: calc(8 * var(--u));
+  flex: 0 0 auto;
+}
+
+.bench {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+}
+
+.slot {
+  position: relative;
+}
+.slot--board {
+  flex: 0 0 auto;
+  width: calc(150 * var(--u));
+  height: calc(210 * var(--u));
+}
+.slot--chip {
+  flex: 1 1 0;
+  min-height: calc(66 * var(--u));
+}
+.slot.is-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255, 255, 255, 0.13);
+  border-radius: 0.6em;
+}
+.slot-hint {
+  font-size: calc(10 * var(--u));
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.26);
+}
+.slot.is-empty.is-target {
+  border-color: rgba(249, 210, 83, 0.8);
+  background: rgba(249, 210, 83, 0.08);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.slot.is-empty.is-target .slot-hint {
+  color: var(--gold);
+}
+.card.is-target {
+  outline: 2px solid rgba(249, 210, 83, 0.9);
+  outline-offset: -1px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.strip {
+  flex: 0 0 auto;
+  /* 36 rather than 26 so the log toggle is a comfortable tap target; it is the one control
+     under 44px, and it is a full-width strip with a harmless failure mode. */
+  height: calc(36 * var(--u));
+}
+.strip-log {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  width: 100%;
+  height: 100%;
+  padding: 0 calc(2 * var(--u));
+  text-align: left;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.strip-turn {
+  flex: 0 0 auto;
+  font-size: calc(9 * var(--u));
+  font-weight: 700;
+  color: var(--gold);
+  border: 1px solid rgba(249, 210, 83, 0.45);
+  border-radius: 0.3em;
+  padding: calc(1.5 * var(--u)) calc(4 * var(--u));
+}
+.strip-line {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: calc(10.5 * var(--u));
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.is-your-turn .strip-line {
+  color: var(--ink);
+}
+.strip-chev {
+  flex: 0 0 auto;
+  font-size: calc(10 * var(--u));
+  color: var(--ink-dim);
+}
+
+/* ---- action bar */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5 * var(--u));
+  flex: 0 0 auto;
+}
+.bar {
+  display: flex;
+  gap: calc(6 * var(--u));
+}
+.bar--atk > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.atkbtn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(1 * var(--u));
+  min-height: calc(48 * var(--u));
+  padding: calc(3 * var(--u)) calc(7 * var(--u));
+  text-align: left;
+  border: 1px solid rgba(249, 210, 83, 0.4);
+  border-radius: 0.45em;
+  background: linear-gradient(180deg, rgba(249, 210, 83, 0.13), rgba(255, 255, 255, 0.02));
+}
+.atkbtn.is-off {
+  border-color: rgba(255, 255, 255, 0.11);
+  background: rgba(255, 255, 255, 0.03);
+  opacity: 0.5;
+}
+.atk-top {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  font-size: calc(12 * var(--u));
+}
+.atk-cost {
+  display: flex;
+  gap: calc(2 * var(--u));
+}
+.atk-dm {
+  margin-left: auto;
+  font-size: calc(14 * var(--u));
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.atk-name {
+  font-size: calc(11 * var(--u));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.atk-why {
+  display: flex;
+  align-items: center;
+  gap: calc(3 * var(--u));
+  font-size: calc(9 * var(--u));
+  color: var(--bad);
+}
+.atk-none {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(48 * var(--u));
+  font-size: calc(11 * var(--u));
+  color: var(--ink-dim);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 0.45em;
+}
+
+.chips {
+  display: flex;
+  gap: calc(5 * var(--u));
+}
+.chip {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  min-height: calc(46 * var(--u));
+  padding: 0 calc(8 * var(--u));
+  border: 1px solid rgba(var(--tcr), 0.5);
+  border-radius: 0.45em;
+  background: rgba(var(--tcr), 0.1);
+  color: var(--tc);
+}
+.chip .glyph {
+  font-size: calc(15 * var(--u));
+}
+.chip-name {
+  font-size: calc(10.5 * var(--u));
+  color: var(--ink);
+}
+.chip.is-on {
+  background: rgba(var(--tcr), 0.3);
+  box-shadow: 0 0 0 2px rgba(var(--tcr), 0.65);
+}
+.chip.is-off {
+  opacity: 0.32;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(4 * var(--u));
+  min-height: calc(46 * var(--u));
+  padding: 0 calc(10 * var(--u));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.45em;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink);
+  font-size: calc(11.5 * var(--u));
+  text-decoration: none;
+}
+.btn.is-off {
+  opacity: 0.32;
+}
+.btn.is-on {
+  box-shadow: 0 0 0 2px rgba(249, 210, 83, 0.65);
+}
+.btn--rt {
+  flex: 0 0 auto;
+}
+.btn--end {
+  flex: 1 1 auto;
+  font-weight: 600;
+  border-color: rgba(249, 210, 83, 0.45);
+  background: linear-gradient(180deg, rgba(249, 210, 83, 0.17), rgba(249, 210, 83, 0.04));
+}
+.btn--wide {
+  width: 100%;
+}
+.btn--ghost {
+  background: none;
+}
+.btn--go {
+  border-color: rgba(249, 210, 83, 0.6);
+  background: linear-gradient(180deg, rgba(249, 210, 83, 0.24), rgba(249, 210, 83, 0.06));
+  font-weight: 700;
+}
+
+/* ---- hand */
+
+/* Class, not #hand: gallery.html has its own #hand section anchor. */
+.handrail {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: calc(152 * var(--u));
+  /* side padding absorbs the fan rotation's overhang; renderHand()'s `room` matches it */
+  padding: calc(10 * var(--u)) calc(14 * var(--u)) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.handrail::-webkit-scrollbar {
+  display: none;
+}
+
+.hand-card {
+  transform-origin: 50% 100%;
+  transform: rotate(var(--rot, 0deg)) translateY(calc(var(--dy, 0) * var(--u)));
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.hand-card.is-playable {
+  border-color: rgba(249, 210, 83, 0.55);
+}
+.hand-card.is-on {
+  transform: rotate(0deg) translateY(calc(-6 * var(--u))) scale(1.06);
+  box-shadow: 0 0 0 2px var(--gold), 0 0.4em 1em rgba(0, 0, 0, 0.7);
+  z-index: 40;
+}
+.hand-empty {
+  align-self: center;
+  font-size: calc(11 * var(--u));
+  color: var(--ink-dim);
+}
+
+/* ---- log drawer */
+
+#log {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  max-height: 52svh;
+  background: rgba(8, 9, 34, 0.97);
+  border-top: 1px solid rgba(249, 210, 83, 0.28);
+  transform: translateY(101%);
+  transition: transform 0.22s ease;
+}
+#log.is-open {
+  transform: none;
+}
+.log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(7 * var(--u)) calc(12 * var(--u));
+  font-size: calc(11 * var(--u));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+#logBody {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(4 * var(--u)) calc(12 * var(--u)) calc(18 * var(--u));
+  font-size: calc(11 * var(--u));
+  line-height: 1.45;
+}
+.log-line {
+  padding: calc(2.5 * var(--u)) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--ink-dim);
+}
+.log-line i {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.92em;
+  opacity: 0.55;
+}
+.l-turn {
+  margin-top: calc(5 * var(--u));
+  color: var(--gold);
+  font-weight: 600;
+}
+.l-attack {
+  color: var(--ink);
+  font-weight: 600;
+}
+.l-hit {
+  color: #f5a74a;
+}
+.l-hurt {
+  color: #e76c42;
+}
+.l-heal {
+  color: var(--rot);
+}
+.l-shield,
+.l-status {
+  color: var(--breath-lit);
+}
+.l-energy {
+  color: rgba(249, 210, 83, 0.8);
+}
+.l-play {
+  color: rgba(243, 240, 238, 0.75);
+}
+.l-ko {
+  color: var(--bad);
+  font-weight: 700;
+}
+.l-quiet {
+  opacity: 0.55;
+}
+.l-warn {
+  color: #e76c42;
+}
+.l-over {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* ---- overlays */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: calc(14 * var(--u)) calc(12 * var(--u));
+  padding-bottom: max(calc(14 * var(--u)), env(safe-area-inset-bottom));
+  background: rgba(7, 8, 32, 0.94);
+  overflow-y: auto;
+}
+.sheet {
+  width: calc(366 * var(--u));
+  max-width: 100%;
+  margin: auto 0; /* safe centring: centres when it fits, never clips when it does not */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(9 * var(--u));
+}
+
+.brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(34 * var(--u));
+  font-weight: 400;
+  letter-spacing: calc(2 * var(--u));
+  text-align: center;
+  color: var(--ink);
+  text-shadow: 0 0 calc(24 * var(--u)) rgba(241, 129, 66, 0.35);
+}
+.brand-sub {
+  display: block;
+  margin-top: calc(4 * var(--u));
+  font-size: calc(11 * var(--u));
+  letter-spacing: calc(1.5 * var(--u));
+  text-transform: lowercase;
+  color: var(--ink-dim);
+}
+.menu-lede {
+  margin: 0;
+  font-size: calc(11.5 * var(--u));
+  color: var(--ink-dim);
+  text-align: center;
+}
+
+.deckgrid {
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+  width: 100%;
+}
+.deckcard {
+  display: flex;
+  flex-direction: column;
+  gap: calc(3 * var(--u));
+  width: 100%;
+  min-height: calc(60 * var(--u));
+  padding: calc(9 * var(--u)) calc(11 * var(--u));
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.5em;
+  background: linear-gradient(150deg, #453651, #12143a);
+}
+.deck-head {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+}
+.deck-name {
+  font-family: var(--font-display);
+  font-size: calc(16 * var(--u));
+  color: var(--ink);
+}
+.deck-profile {
+  margin-left: auto;
+  display: flex;
+  gap: calc(4 * var(--u));
+  font-size: calc(15 * var(--u));
+}
+.deck-profile .glyph {
+  color: var(--tc);
+}
+.deck-blurb {
+  font-size: calc(10.5 * var(--u));
+  color: var(--ink-dim);
+  line-height: 1.35;
+}
+.deck-types {
+  font-size: calc(9.5 * var(--u));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(249, 210, 83, 0.7);
+}
+
+.menu-row {
+  display: flex;
+  gap: calc(8 * var(--u));
+  width: 100%;
+}
+.menu-row .btn {
+  flex: 1 1 0;
+}
+
+/* ---- art-mode switch: ASCII plates or procedural sigils.
+   Two real buttons rather than a checkbox, so the current mode is legible at a glance and both
+   halves clear the 44px tap floor. Lives in the menu here and in the gallery header there. */
+.artswitch {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  width: 100%;
+  flex-wrap: wrap;
+}
+.artswitch-label {
+  flex: 0 0 auto;
+  font-size: calc(10 * var(--u));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.artseg {
+  display: flex;
+  flex: 1 1 auto;
+  gap: calc(4 * var(--u));
+  padding: calc(3 * var(--u));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.5em;
+  background: rgba(255, 255, 255, 0.04);
+}
+.artbtn {
+  flex: 1 1 0;
+  min-height: calc(44 * var(--u));
+  min-width: calc(44 * var(--u));
+  padding: 0 calc(8 * var(--u));
+  border-radius: 0.4em;
+  font-size: calc(11 * var(--u));
+  color: var(--ink-dim);
+  background: none;
+  line-height: 1.2;
+}
+.artbtn.is-on {
+  color: var(--gold);
+  font-weight: 700;
+  background: linear-gradient(180deg, rgba(249, 210, 83, 0.24), rgba(249, 210, 83, 0.07));
+  box-shadow: inset 0 0 0 1px rgba(249, 210, 83, 0.6);
+}
+
+.rules {
+  width: 100%;
+  font-size: calc(11 * var(--u));
+  color: var(--ink-dim);
+}
+.rules summary {
+  padding: calc(8 * var(--u)) 0;
+  color: var(--gold);
+  cursor: pointer;
+}
+.rules ul {
+  margin: 0 0 calc(8 * var(--u));
+  padding-left: calc(16 * var(--u));
+  line-height: 1.45;
+}
+.rules li {
+  margin-bottom: calc(4 * var(--u));
+}
+.rules-canon {
+  margin: calc(8 * var(--u)) 0 0;
+  font-size: calc(10 * var(--u));
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: calc(4 * var(--u));
+}
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  font-size: calc(11 * var(--u));
+}
+.legend-row .glyph {
+  font-size: calc(16 * var(--u));
+  color: var(--tc);
+  width: calc(20 * var(--u));
+  text-align: center;
+}
+.legend-name {
+  color: var(--ink);
+  font-weight: 600;
+  min-width: calc(60 * var(--u));
+}
+.legend-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(10 * var(--u));
+  opacity: 0.6;
+}
+.legend-swatch {
+  margin-left: auto;
+  width: calc(28 * var(--u));
+  height: calc(10 * var(--u));
+  border-radius: calc(5 * var(--u));
+}
+
+.sheet--promote h2,
+.sheet--over h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-align: center;
+}
+.sheet--promote h2 {
+  font-size: calc(20 * var(--u));
+}
+.sheet--promote p {
+  margin: 0;
+  font-size: calc(11 * var(--u));
+  color: var(--ink-dim);
+}
+.pickrow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(8 * var(--u));
+}
+.pickrow .card {
+  cursor: pointer;
+  outline: 1px solid rgba(249, 210, 83, 0.55);
+  outline-offset: calc(1 * var(--u));
+}
+
+/* Nothing behind an overlay should scroll (long menus scroll inside .overlay itself). */
+body.has-overlay {
+  overflow: hidden;
+}
+
+.over-title {
+  font-size: calc(28 * var(--u));
+}
+.sheet--over.is-win .over-title {
+  color: var(--gold);
+  text-shadow: 0 0 calc(20 * var(--u)) rgba(249, 210, 83, 0.4);
+}
+/* The only place v1 spends --void: a defeat wears the colour of the wrong magic. Everything
+   else the Void touches is v2 (the Ascension Ritual). color-mix keeps the hex to one place. */
+.sheet--over.is-loss .over-title {
+  color: var(--bad);
+  text-shadow: 0 0 calc(22 * var(--u)) color-mix(in srgb, var(--void) 75%, transparent);
+}
+.sheet--over.is-loss {
+  padding: calc(10 * var(--u)) 0;
+  border-radius: 0.6em;
+  box-shadow: 0 0 calc(70 * var(--u)) color-mix(in srgb, var(--void) 24%, transparent);
+}
+.over-why {
+  margin: 0;
+  font-size: calc(13 * var(--u));
+  text-align: center;
+}
+.over-meta {
+  margin: 0;
+  font-size: calc(10 * var(--u));
+  color: var(--ink-dim);
+  text-align: center;
+}
+
+.sheet--zoom {
+  gap: calc(12 * var(--u));
+}
+
+/* ------------------------------------------------------------------ animation */
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+@keyframes fadeout {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes hitshake {
+  0% {
+    transform: translateX(0);
+  }
+  22% {
+    transform: translateX(calc(-3 * var(--u)));
+  }
+  44% {
+    transform: translateX(calc(3 * var(--u)));
+  }
+  70% {
+    transform: translateX(calc(-2 * var(--u)));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes enterin {
+  from {
+    opacity: 0;
+    transform: translateY(calc(6 * var(--u))) scale(0.94);
+  }
+}
+@keyframes lungeup {
+  50% {
+    transform: translateY(calc(-10 * var(--u)));
+  }
+}
+@keyframes lungedown {
+  50% {
+    transform: translateY(calc(10 * var(--u)));
+  }
+}
+@keyframes koflash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(219, 80, 47, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 calc(16 * var(--u)) calc(5 * var(--u)) rgba(219, 80, 47, 0);
+  }
+}
+
+.card.is-hit {
+  animation: hitshake 0.3s ease;
+}
+.card.is-hit::after,
+.card.is-healed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: fadeout 0.3s ease forwards;
+}
+.card.is-hit::after {
+  background: rgba(219, 80, 47, 0.36);
+}
+.card.is-healed::after {
+  background: rgba(143, 191, 106, 0.3);
+}
+.card.is-enter {
+  animation: enterin 0.3s ease;
+}
+.card.is-lunge-up {
+  animation: lungeup 0.28s ease;
+}
+.card.is-lunge-down {
+  animation: lungedown 0.28s ease;
+}
+.slot.is-ko {
+  animation: koflash 0.38s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ------------------------------------------------------------------ gallery */
+
+body.gallery {
+  --u: clamp(0.5px, min(100vw / 394, 1.35px), 1.35px);
+}
+
+.g-wrap {
+  width: calc(390 * var(--u));
+  max-width: 100%;
+  margin: 0 auto;
+  padding: calc(16 * var(--u)) calc(10 * var(--u)) calc(48 * var(--u));
+}
+
+.g-head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(26 * var(--u));
+  font-weight: 400;
+  letter-spacing: calc(1.5 * var(--u));
+}
+.g-head p {
+  margin: calc(6 * var(--u)) 0 0;
+  font-size: calc(11.5 * var(--u));
+  line-height: 1.45;
+  color: var(--ink-dim);
+}
+.g-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(6 * var(--u));
+  margin: calc(12 * var(--u)) 0 calc(4 * var(--u));
+}
+.g-nav a {
+  font-size: calc(10.5 * var(--u));
+  padding: calc(6 * var(--u)) calc(9 * var(--u));
+  border: 1px solid rgba(249, 210, 83, 0.35);
+  border-radius: 0.4em;
+  text-decoration: none;
+}
+
+/* The gallery's own copy of the art switch, above the fold: it drives every card on the page. */
+.g-switch {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  margin: calc(12 * var(--u)) 0 0;
+  padding: calc(8 * var(--u)) calc(10 * var(--u));
+  border: 1px solid rgba(249, 210, 83, 0.3);
+  border-radius: 0.5em;
+  background: rgba(43, 32, 53, 0.55);
+}
+.g-switch .artswitch-label {
+  font-size: calc(11 * var(--u));
+}
+
+.g-section {
+  margin-top: calc(28 * var(--u));
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  padding-top: calc(12 * var(--u));
+}
+.g-section > h2 {
+  margin: 0 0 calc(2 * var(--u));
+  font-family: var(--font-display);
+  font-size: calc(19 * var(--u));
+  font-weight: 400;
+  color: var(--gold);
+}
+.g-note {
+  margin: 0 0 calc(12 * var(--u));
+  font-size: calc(10.5 * var(--u));
+  color: var(--ink-dim);
+  line-height: 1.4;
+}
+.g-typehead {
+  display: flex;
+  align-items: center;
+  gap: calc(7 * var(--u));
+  margin: calc(16 * var(--u)) 0 calc(7 * var(--u));
+  font-size: calc(12 * var(--u));
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tc);
+}
+.g-typehead .glyph {
+  font-size: calc(17 * var(--u));
+}
+.g-typehead::after {
+  content: '';
+  flex: 1 1 auto;
+  height: 1px;
+  background: rgba(var(--tcr), 0.3);
+}
+
+.g-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(9 * var(--u));
+}
+.g-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(7 * var(--u));
+}
+.g-chips .slot--chip {
+  flex: 0 0 auto;
+  width: calc(212 * var(--u));
+}
+
+/* ---- the art plates: every ASCII piece at reading size, with its sigil beside it so the two
+   modes can be judged against each other without flipping the switch back and forth. */
+.g-art {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(10 * var(--u));
+}
+.g-plate {
+  flex: 1 1 calc(174 * var(--u));
+  min-width: calc(174 * var(--u));
+  max-width: 100%;
+  margin: 0;
+  padding: calc(8 * var(--u)) calc(6 * var(--u)) calc(6 * var(--u));
+  border: 1px solid rgba(var(--tcr), 0.35);
+  border-radius: 0.5em;
+  background: linear-gradient(170deg, rgba(var(--tcr), 0.12), rgba(43, 32, 53, 0.5));
+  overflow: hidden;
+}
+.g-plate .ascii {
+  font-size: calc(8.6 * var(--u));
+}
+.g-plate figcaption {
+  display: flex;
+  align-items: center;
+  gap: calc(5 * var(--u));
+  margin-top: calc(7 * var(--u));
+  padding-top: calc(5 * var(--u));
+  border-top: 1px solid rgba(var(--tcr), 0.2);
+  font-size: calc(10.5 * var(--u));
+  color: var(--ink);
+}
+.g-plate figcaption .glyph {
+  color: var(--tc);
+  font-size: calc(13 * var(--u));
+}
+.g-plate .g-plate-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.g-plate .g-plate-sigil {
+  flex: 0 0 auto;
+  width: calc(22 * var(--u));
+  height: calc(22 * var(--u));
+  color: var(--tc);
+}
+
+.g-decks {
+  display: flex;
+  flex-direction: column;
+  gap: calc(12 * var(--u));
+}
+.g-deck {
+  padding: calc(10 * var(--u)) calc(12 * var(--u));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5em;
+  background: rgba(255, 255, 255, 0.025);
+}
+.g-deck h3 {
+  display: flex;
+  align-items: center;
+  gap: calc(7 * var(--u));
+  margin: 0 0 calc(5 * var(--u));
+  font-family: var(--font-display);
+  font-size: calc(15 * var(--u));
+  font-weight: 400;
+}
+.g-deck h3 .glyph {
+  font-size: calc(15 * var(--u));
+  color: var(--tc);
+}
+.g-deck p {
+  margin: 0 0 calc(7 * var(--u));
+  font-size: calc(10.5 * var(--u));
+  color: var(--ink-dim);
+  line-height: 1.4;
+}
+.g-decklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(4 * var(--u)) calc(8 * var(--u));
+  font-size: calc(10.5 * var(--u));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.g-decklist li {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+}
+.g-decklist b {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+.g-decklist .glyph {
+  color: var(--tc);
+}
+.g-decklist .g-tier {
+  font-size: 0.9em;
+  opacity: 0.45;
+}
+
+.g-keys {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+  font-size: calc(11 * var(--u));
+  color: var(--ink-dim);
+}
+.g-key {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  line-height: 1.35;
+}
+.g-key .pip,
+.g-key .eff,
+.g-key .badge,
+.g-key .c-tier {
+  flex: 0 0 auto;
+  font-size: calc(12 * var(--u));
+}
+
+.g-foot {
+  margin-top: calc(28 * var(--u));
+  font-size: calc(10 * var(--u));
+  color: rgba(243, 240, 238, 0.4);
+  line-height: 1.5;
+}
+
+/* desktop adaptation: wider canvas, same card sizes */
+@media (min-width: 760px) {
+  .g-wrap {
+    width: min(1120px, 94vw);
+  }
+}

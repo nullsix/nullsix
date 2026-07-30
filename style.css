@@ -12,6 +12,8 @@
   --pink-shade: #ff78b4;
   --green: #8af32e;
   --green-shade: #a5f65e;
+  --gold: #f9d253; /* HELIOCIDE's Gold energy */
+  --gold-shade: #c9a12e;
 }
 
 * { box-sizing: border-box; }
@@ -118,6 +120,11 @@ header h1 {
 .green-head h2 {
   color: var(--green);
   border-bottom: 4px solid var(--green-shade);
+}
+
+.gold-head h2 {
+  color: var(--gold);
+  border-bottom: 4px solid var(--gold-shade);
 }
 
 .card p {

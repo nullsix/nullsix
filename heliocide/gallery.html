@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0c0e3d" />
+    <meta name="description" content="HELIOCIDE card gallery — every card at its exact in-game sizes." />
+    <title>HELIOCIDE — Card Gallery</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="gallery">
+    <div class="g-wrap" id="wrap">
+      <header class="g-head">
+        <h1>HELIOCIDE — Card Gallery</h1>
+        <p>
+          Every card in the catalog, rendered at the <b>exact</b> sizes the duel screen uses on this device.
+          The question this page exists to answer: does a card read at phone size? Scroll the board-size
+          section first — that is the size you will actually be playing against.
+        </p>
+        <nav class="g-nav">
+          <a href="#s-board">Board size</a>
+          <a href="#s-bench">Bench slots</a>
+          <a href="#s-hand">Hand size</a>
+          <a href="#s-zoom">Zoomed</a>
+          <a href="#s-art">Art plates</a>
+          <a href="#s-decks">Decks</a>
+          <a href="#s-key">Reading key</a>
+          <a href="index.html">Play</a>
+        </nav>
+        <!-- Drives every card on this page and the duel screen alike; persisted in localStorage. -->
+        <div id="artSwitch"></div>
+      </header>
+
+      <section class="g-section" id="s-board">
+        <h2>Board size — the active creature</h2>
+        <p class="g-note">
+          150 design px wide. Shown mid-fight: damaged, carrying energy, some with statuses — that is how
+          they look when it matters. Grouped by type.
+        </p>
+        <div id="boardCards"></div>
+      </section>
+
+      <section class="g-section" id="s-bench">
+        <h2>Bench slot — the tucked strip</h2>
+        <p class="g-note">
+          Benched creatures use the same card, re-laid out into a 212 x 66 strip: sigil, name, HP, attached
+          energy. Three of these stack beside the active card. Tap-to-zoom is how you read their attacks
+          in play.
+        </p>
+        <div class="g-chips" id="benchCards"></div>
+      </section>
+
+      <section class="g-section" id="s-hand">
+        <h2>Hand size — the fanned cards</h2>
+        <p class="g-note">100 design px wide, pristine (as they come out of the deck). In play these overlap in a fan.</p>
+        <div id="handCards"></div>
+      </section>
+
+      <section class="g-section" id="s-zoom">
+        <h2>Zoomed — long-press any card in play</h2>
+        <p class="g-note">300 design px wide. The only size that carries flavour text and the attack lines.</p>
+        <div class="g-grid" id="zoomCards"></div>
+      </section>
+
+      <section class="g-section" id="s-art">
+        <h2>Art plates — the ASCII pieces at reading size</h2>
+        <p class="g-note">
+          Every piece is 32 x 16 printable ASCII characters, washed with its type's gradient
+          (<b>background-clip: text</b>). This section ignores the switch above on purpose: the
+          plate is always the ASCII, and the mark beside each name is always the procedural sigil,
+          so the two art modes can be judged side by side. The switch decides which of them the
+          cards themselves wear.
+        </p>
+        <div class="g-art" id="artPlates"></div>
+      </section>
+
+      <section class="g-section" id="s-decks">
+        <h2>The four preset decks</h2>
+        <p class="g-note">15 cards each, drawn only from the deck's two energy types. Max two copies of a card.</p>
+        <div class="g-decks" id="deckList"></div>
+      </section>
+
+      <section class="g-section" id="s-key">
+        <h2>Reading key</h2>
+        <p class="g-note">Energy types, cost pips, and every mark that can appear on a card.</p>
+        <div id="legend"></div>
+        <div class="g-keys" id="keys"></div>
+      </section>
+
+      <footer class="g-foot">
+        <p>
+          HELIOCIDE is a toy riff on <i>Bones of a Broken World</i> imagery and carries zero canon weight.
+          Cards render as pure CSS, inline SVG and printable ASCII — no image files anywhere in this page.
+          Colours are the Thoughts of an Eaten Sun palette (cover + book site), per THEME.md.
+        </p>
+      </footer>
+    </div>
+
+    <script type="module">
+      // Standalone: card data + the shared renderer out of ui.js. Importing ui.js does NOT start a
+      // game (boot() is the only entry point), so this page stays a static catalog.
+      import { CARDS, TYPES, DECKS, cardById, typeById } from './js/cards.js';
+      import {
+        cardHtml,
+        typeLegendHtml,
+        typeGlyph,
+        pipHtml,
+        EFFECTS,
+        sigilSvg,
+        asciiArtHtml,
+        artSwitchHtml,
+        setArtMode,
+        onArtMode,
+      } from './js/ui.js';
+
+      const byType = (typeId) => CARDS.filter((c) => c.type === typeId);
+      const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+      /** Deterministic in-play mock so the board-size row shows real chrome, not pristine cards. */
+      function mockCreature(card, i) {
+        const energy = {};
+        for (const t of TYPES) energy[t.id] = 0;
+        energy[card.type] = 1 + (i % 3);
+        if (i % 2 === 1) energy[TYPES[(i + 2) % TYPES.length].id] += 1;
+        const hpFactor = [1, 0.72, 0.44, 0.88][i % 4];
+        return {
+          uid: `g${i}`,
+          cardId: card.id,
+          hp: Math.max(10, Math.round((card.hp * hpFactor) / 10) * 10),
+          energy,
+          rot: i % 5 === 0,
+          stun: i % 7 === 3,
+          shield: i % 6 === 2 ? 20 : 0,
+        };
+      }
+
+      function typeGroups(host, size, live) {
+        let out = '';
+        let n = 0;
+        for (const t of TYPES) {
+          const cards = byType(t.id);
+          out += `<div class="g-typehead t-${t.id}">${typeGlyph(t.id)}<span>${esc(t.name)}</span></div>`;
+          out += `<div class="g-grid">`;
+          for (const card of cards) {
+            out += cardHtml(card.id, { size, creature: live ? mockCreature(card, n) : null });
+            n++;
+          }
+          out += `</div>`;
+        }
+        host.innerHTML = out;
+      }
+
+      /**
+       * Everything that depends on the art mode. Re-run wholesale when the switch flips — 80
+       * cards is nothing to rebuild, and it keeps one code path for first paint and for toggling.
+       */
+      function renderCards() {
+        typeGroups(document.getElementById('boardCards'), 'board', true);
+        typeGroups(document.getElementById('handCards'), 'hand', false);
+
+        document.getElementById('benchCards').innerHTML = CARDS.map(
+          (card, i) => `<div class="slot slot--chip">${cardHtml(card.id, { size: 'chip', creature: mockCreature(card, i) })}</div>`,
+        ).join('');
+
+        document.getElementById('zoomCards').innerHTML = CARDS.map((card) => cardHtml(card.id, { size: 'zoom' })).join('');
+
+        document.getElementById('artSwitch').innerHTML = artSwitchHtml('g-switch');
+      }
+
+      renderCards();
+      onArtMode(renderCards);
+
+      // The gallery has no game loop, so it owns the one click this page can produce.
+      document.addEventListener('click', (ev) => {
+        const hit = ev.target.closest && ev.target.closest('[data-act="artmode"]');
+        if (hit) setArtMode(hit.getAttribute('data-mode'));
+      });
+
+      // Always-ASCII plates, with the sigil for the same card alongside: the one place on the
+      // page where both art modes are visible at once.
+      document.getElementById('artPlates').innerHTML = CARDS.map(
+        (card) => `<figure class="g-plate t-${card.type}">
+          ${asciiArtHtml(card.id)}
+          <figcaption>
+            ${typeGlyph(card.type)}
+            <span class="g-plate-name">${esc(card.name)}</span>
+            <span class="g-plate-sigil" title="the procedural sigil for ${esc(card.name)}">${sigilSvg(card.sigil)}</span>
+          </figcaption>
+        </figure>`,
+      ).join('');
+
+      document.getElementById('deckList').innerHTML = DECKS.map((deck) => {
+        const counts = new Map();
+        for (const id of deck.cards) counts.set(id, (counts.get(id) || 0) + 1);
+        const rows = [...counts]
+          .map(([id, n]) => {
+            const card = cardById(id);
+            return `<li class="t-${card.type}"><b>${n}x</b>${typeGlyph(card.type)}<span>${esc(card.name)}</span><span class="g-tier">T${card.tier}</span></li>`;
+          })
+          .join('');
+        return `<div class="g-deck">
+          <h3>${deck.profile.map((t) => `<span class="t-${t}">${typeGlyph(t)}</span>`).join('')}${esc(deck.name)}</h3>
+          <p>${esc(deck.blurb)}</p>
+          <p><b>${deck.profile.map((t) => esc(typeById(t).name)).join(' + ')}</b> — ${deck.cards.length} cards</p>
+          <ul class="g-decklist">${rows}</ul>
+        </div>`;
+      }).join('');
+
+      document.getElementById('legend').innerHTML = typeLegendHtml();
+
+      const effectRows = Object.entries(EFFECTS)
+        .map(
+          ([kind, info]) =>
+            `<div class="g-key"><span class="eff">${info.mark}</span><span><b>${esc(kind)}</b> — ${esc(
+              info.label({ amount: 20, count: 1, scope: 'all' }),
+            )}</span></div>`,
+        )
+        .join('');
+
+      document.getElementById('keys').innerHTML = `
+        <div class="g-key">${pipHtml('bone')}${pipHtml('ember')}<span>Typed cost / attached energy — the glyph names the type.</span></div>
+        <div class="g-key">${pipHtml('any')}<span>A hollow, dashed pip is <b>any</b> energy: one of whatever else is attached.</span></div>
+        <div class="g-key"><span class="c-tier">II</span><span>Tier marker (I-III). Higher tiers cost more energy and hit harder.</span></div>
+        <div class="g-key"><span class="badge b-rot">&#10059;</span><span>Rot — 10 damage at the end of its owner's turn. Retreating clears it.</span></div>
+        <div class="g-key"><span class="badge b-stun">&#10022;</span><span>Stunned — cannot attack on its owner's next turn.</span></div>
+        <div class="g-key"><span class="badge b-shield">&#9930;20</span><span>Shield — soaks the next attack that connects, then breaks.</span></div>
+        <div class="g-key"><span>weak ${typeGlyph('gold')}</span><span>Weakness: that type deals <b>double</b> damage to this card.</span></div>
+        <div class="g-key"><span>res ${typeGlyph('ember')}</span><span>Resistance: that type deals <b>20 less</b>.</span></div>
+        <div class="g-key"><span>&#8644;2</span><span>Retreat cost: attached energy discarded to swap this creature out.</span></div>
+        ${effectRows}`;
+    </script>
+  </body>
+</html>

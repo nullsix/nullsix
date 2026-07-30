@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0c0e3d" />
+    <meta name="description" content="HELIOCIDE — a card duel in the dark after the sun. Vanilla JS, no build step." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>HELIOCIDE</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="game">
+    <!-- Duel screen. Each half is [active creature | three bench slots]; the strip between
+         them is the log handle. ui.js owns every child of #app. -->
+    <div id="app">
+      <header class="hud hud--foe" id="foeHud"></header>
+
+      <section class="half half--foe" aria-label="Opponent's board">
+        <div class="active-wrap" id="foeActive"></div>
+        <div class="bench" id="foeBench"></div>
+      </section>
+
+      <div class="strip" id="strip"></div>
+
+      <section class="half half--you" aria-label="Your board">
+        <div class="active-wrap" id="youActive"></div>
+        <div class="bench" id="youBench"></div>
+      </section>
+
+      <footer class="hud hud--you" id="youHud"></footer>
+
+      <div class="actions" id="actions"></div>
+
+      <section class="handrail" id="hand" aria-label="Your hand"></section>
+    </div>
+
+    <aside class="log" id="log" aria-live="polite" aria-hidden="true">
+      <div class="log-head">
+        <span>Battle log</span>
+        <button class="btn btn--ghost" data-act="closelog">Close</button>
+      </div>
+      <div id="logBody"></div>
+    </aside>
+
+    <div class="overlay" id="overlay" hidden></div>
+
+    <noscript>
+      <p style="padding: 1rem; font-family: sans-serif">HELIOCIDE needs JavaScript — it is the whole game.</p>
+    </noscript>
+
+    <script type="module">
+      import { boot } from './js/ui.js';
+      boot();
+    </script>
+  </body>
+</html>
