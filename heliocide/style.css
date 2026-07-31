@@ -283,15 +283,19 @@ body {
   }
 }
 
-/* Board / hand: texture, not picture. Small enough that it reads as a woven field behind the
-   card's own type colour, and it lives in the art window so it can never crowd the text. */
+/* Board / hand: the art carries the creature's identity even at this size, so it gets real
+   presence — brightness lifts the ramp's deep stops (which otherwise sink into the card
+   ground) and opacity stays under 1 so it still sits behind the card's chrome. It lives in
+   the art window so it can never crowd the text. */
 .card .ascii {
   font-size: clamp(2.5px, calc(4 * var(--u)), 4px);
-  opacity: 0.5;
+  opacity: 0.85;
+  filter: brightness(1.35);
 }
 .card--chip .ascii {
   font-size: clamp(1.5px, calc(1.8 * var(--u)), 2.4px);
-  opacity: 0.45;
+  opacity: 0.75;
+  filter: brightness(1.35);
 }
 .card .c-art {
   overflow: hidden;
@@ -435,13 +439,19 @@ body {
   flex: 0 0 auto;
 }
 
+/* Attack names wrap to two lines instead of truncating — "Break Against Stone" must read
+   in full at board size. The art window above is flex 1 1 auto / min-height 0, so a second
+   line costs art height, never card overflow. */
 .c-an {
   flex: 1 1 auto;
   min-width: 0;
   font-size: 0.76em;
-  white-space: nowrap;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .c-dm {
