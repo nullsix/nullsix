@@ -11,7 +11,9 @@
 //     substitutes anything outside this range into a proportional or colour-emoji font and the
 //     grid tears apart.
 //   * every piece is exactly 32 columns x 16 rows. One uniform aspect means one font-size
-//     per card size works for the whole catalog, and the block centres exactly.
+//     per card size works for the whole catalog, and the block centres exactly. The CSS
+//     renders cells at the classic 1:2 terminal aspect (line-height 1.2 on `.ascii`), so
+//     32x16 lands as a square plate — author and preview at editor-normal line spacing.
 //   * no trailing whitespace on any line (so the widest line — always the full-width frame
 //     rule — sets `max-content` and the piece centres honestly).
 //   * the first and last line of every piece is its type's 32-char frame rule: a symmetric

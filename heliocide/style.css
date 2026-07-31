@@ -260,7 +260,12 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace;
   font-variant-ligatures: none;
   white-space: pre;
-  line-height: 1;
+  /* 1.2 makes the character cell the classic 1:2 terminal aspect (monospace glyphs run
+     ~0.6em wide), so a 32x16 piece renders as the square plate it was drawn as. At
+     line-height 1 the whole catalog reads ~17% vertically squished. Containment is safe
+     everywhere: board/chip art windows crop symmetrically (centered flex + overflow
+     hidden), and sheets scroll rather than clip. */
+  line-height: 1.2;
   width: max-content;
   max-width: 100%;
   background-image: var(--tg);
